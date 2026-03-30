@@ -307,7 +307,7 @@ export async function scrapeViaSearch(
           continue;
         }
 
-        const filterResult = await filterListing(listing.description, listing.sellerName ?? undefined);
+        const filterResult = await filterListing(listing.description, listing.sellerName ?? undefined, listing.title);
         const categoryId = await guessCategory(listing.title);
 
         await prisma.listing.create({

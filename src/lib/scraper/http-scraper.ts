@@ -273,7 +273,7 @@ export async function scrapeWithHttp(
               continue;
             }
 
-            const filterResult = await filterListing(listing.description, listing.sellerName ?? undefined);
+            const filterResult = await filterListing(listing.description, listing.sellerName ?? undefined, listing.title);
 
             // Benzer ilan tespiti
             if (listing.title && listing.price) {

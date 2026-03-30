@@ -53,11 +53,13 @@ export async function getBlacklistKeywords(): Promise<string[]> {
 
 export async function filterListing(
   description: string,
-  sellerName?: string
+  sellerName?: string,
+  title?: string
 ): Promise<FilterResult> {
   const blacklist = await getBlacklistKeywords();
   const lowerDesc = description.toLowerCase();
   const lowerSeller = (sellerName || "").toLowerCase();
+  const lowerTitle = (title || "").toLowerCase();
   const matchedKeywords: string[] = [];
 
   // 1. Açıklama içinde blacklist kelime kontrolü
@@ -86,6 +88,32 @@ export async function filterListing(
   for (const pattern of agentNamePatterns) {
     if (pattern.test(lowerSeller)) {
       matchedKeywords.push(`satıcı adı: ${sellerName}`);
+    }
+  }
+
+  // 2b. Başlıkta emlakçı/gayrimenkul ofisi ismi kontrolü
+  // Emlakjet gibi sitelerde satıcı adı başlığa dahil edilir
+  if (lowerTitle) {
+    // "Sahibinden" kelimesi varsa → gerçek sahip olma ihtimali yüksek, atla
+    const isSahibinden = /\bsahibinden\b/i.test(lowerTitle);
+    if (!isSahibinden) {
+      const titleAgentPatterns = [
+        /\bemlak\b/i,
+        /\bgayrimenkul\b/i,
+        /\bremax\b/i,
+        /\bre\/max\b/i,
+        /\bcentury\s*21\b/i,
+        /\bcoldwell\b/i,
+        /\bturyap\b/i,
+        /\brealty\s*world\b/i,
+        /\bkeller\s*williams\b/i,
+      ];
+      for (const pattern of titleAgentPatterns) {
+        if (pattern.test(lowerTitle)) {
+          matchedKeywords.push(`başlıkta emlakçı: ${title?.substring(0, 50)}`);
+          break; // Bir eşleşme yeterli
+        }
+      }
     }
   }
 

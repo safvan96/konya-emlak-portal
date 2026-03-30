@@ -260,10 +260,11 @@ export async function scrapeEmlakjet(
           continue;
         }
 
-        // Emlakçı filtresi
+        // Emlakçı filtresi (title da taranır - Emlakjet'de satıcı adı başlıkta)
         const filterResult = await filterListing(
           listing.description,
-          listing.sellerName ?? undefined
+          listing.sellerName ?? undefined,
+          listing.title
         );
 
         // Benzer ilan tespiti

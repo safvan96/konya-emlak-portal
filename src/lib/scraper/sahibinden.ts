@@ -268,7 +268,8 @@ export async function scrapeSahibinden(
             // Emlakçı filtresi
             const filterResult = await filterListing(
               listing.description,
-              listing.sellerName ?? undefined
+              listing.sellerName ?? undefined,
+              listing.title
             );
 
             // Benzer ilan tespiti (aynı başlık + fiyat = muhtemelen aynı ilan farklı ID)
