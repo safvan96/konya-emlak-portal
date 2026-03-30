@@ -32,6 +32,14 @@ interface CustomerDetail {
     id: string;
     listing: { id: string; title: string; price: number | null };
   }>;
+  preferences: {
+    cityIds: string[];
+    categoryIds: string[];
+    listingType: string | null;
+    priceMin: number | null;
+    priceMax: number | null;
+    autoAssign: boolean;
+  } | null;
 }
 
 export default function CustomerDetailPage() {
@@ -60,7 +68,7 @@ export default function CustomerDetailPage() {
 
   if (!data) return <div className="p-8 text-center text-[var(--muted-foreground)]">Musteri bulunamadi</div>;
 
-  const { customer, recentLogs, assignments, favorites } = data;
+  const { customer, recentLogs, assignments, favorites, preferences } = data;
 
   return (
     <div className="space-y-6">
@@ -206,6 +214,45 @@ export default function CustomerDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Tercihler */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Tercihler
+            {preferences?.autoAssign && <Badge variant="success" className="text-xs">Oto-Atama Aktif</Badge>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {preferences ? (
+            <div className="grid gap-3 md:grid-cols-2 text-sm">
+              <div>
+                <span className="text-[var(--muted-foreground)]">Sehirler:</span>
+                <span className="ml-2 font-medium">{preferences.cityIds?.length > 0 ? preferences.cityIds.join(", ") : "Hepsi"}</span>
+              </div>
+              <div>
+                <span className="text-[var(--muted-foreground)]">Kategoriler:</span>
+                <span className="ml-2 font-medium">{preferences.categoryIds?.length > 0 ? preferences.categoryIds.join(", ") : "Hepsi"}</span>
+              </div>
+              <div>
+                <span className="text-[var(--muted-foreground)]">Tip:</span>
+                <span className="ml-2 font-medium">{preferences.listingType === "SALE" ? "Satilik" : preferences.listingType === "RENT" ? "Kiralik" : "Hepsi"}</span>
+              </div>
+              <div>
+                <span className="text-[var(--muted-foreground)]">Fiyat:</span>
+                <span className="ml-2 font-medium">
+                  {preferences.priceMin || preferences.priceMax
+                    ? `${preferences.priceMin ? formatPrice(preferences.priceMin) : "0"} - ${preferences.priceMax ? formatPrice(preferences.priceMax) : "∞"}`
+                    : "Sinir yok"}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-[var(--muted-foreground)]">Tercih belirlenmemis</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

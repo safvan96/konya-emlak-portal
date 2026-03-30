@@ -42,6 +42,7 @@ export default function MyListingsPage() {
   const [searchText, setSearchText] = useState("");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [compareIds, setCompareIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     Promise.all([fetchAssignments(), fetchFavorites()]).finally(() => setLoading(false));
@@ -156,6 +157,14 @@ export default function MyListingsPage() {
         <span className="self-center text-sm text-[var(--muted-foreground)]">
           {filtered.length} ilan
         </span>
+        {compareIds.size >= 2 && (
+          <Link
+            href={`/compare?ids=${Array.from(compareIds).join(",")}`}
+            className="self-center rounded-md bg-[var(--primary)] text-[var(--primary-foreground)] px-3 py-1.5 text-xs font-medium hover:opacity-90"
+          >
+            Karsilastir ({compareIds.size})
+          </Link>
+        )}
       </div>
 
       {filtered.length === 0 ? (
@@ -167,9 +176,21 @@ export default function MyListingsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((a) => (
-            <Card key={a.id} className="overflow-hidden">
+            <Card key={a.id} className={`overflow-hidden ${compareIds.has(a.listing.id) ? "ring-2 ring-[var(--primary)]" : ""}`}>
               {a.listing.imageUrls.length > 0 && (
                 <div className="aspect-video bg-[var(--muted)] relative">
+                  <button
+                    onClick={() => setCompareIds((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(a.listing.id)) next.delete(a.listing.id); else if (next.size < 4) next.add(a.listing.id);
+                      return next;
+                    })}
+                    className={`absolute bottom-2 left-2 z-10 px-2 py-1 rounded text-[10px] font-bold transition-colors ${
+                      compareIds.has(a.listing.id) ? "bg-[var(--primary)] text-white" : "bg-black/50 text-white hover:bg-black/70"
+                    }`}
+                  >
+                    {compareIds.has(a.listing.id) ? "Secildi" : "Karsilastir"}
+                  </button>
                   <ImageWithFallback
                     src={a.listing.imageUrls[0]}
                     alt={a.listing.title}

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
-import { Plus, Trash2, Edit, X, Link2, Download } from "lucide-react";
+import { Plus, Trash2, Edit, X, Link2, Download, Upload } from "lucide-react";
 import Link from "next/link";
 import { TableSkeleton } from "@/components/ui/skeleton";
 
@@ -28,6 +28,7 @@ export default function CustomersPage() {
   const [form, setForm] = useState({ name: "", surname: "", email: "", password: "" });
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [importResult, setImportResult] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCustomers().finally(() => setLoading(false));
@@ -130,12 +131,27 @@ export default function CustomersPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Musteri Yonetimi</h1>
         <div className="flex gap-2">
+          <label className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-3 py-2 text-sm font-medium hover:bg-[var(--accent)] transition-colors cursor-pointer">
+            <Upload className="h-4 w-4" /> Import
+            <input type="file" accept=".csv" className="hidden" onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const form = new FormData();
+              form.append("file", file);
+              const res = await fetch("/api/customers/import", { method: "POST", body: form });
+              const data = await res.json();
+              setImportResult(`${data.created} eklendi, ${data.skipped} atlandi, ${data.errors} hata`);
+              fetchCustomers();
+              e.target.value = "";
+              setTimeout(() => setImportResult(null), 5000);
+            }} />
+          </label>
           <a
             href="/api/customers/export"
             download
             className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-3 py-2 text-sm font-medium hover:bg-[var(--accent)] transition-colors"
           >
-            <Download className="h-4 w-4" /> CSV
+            <Download className="h-4 w-4" /> Export
           </a>
           <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm({ name: "", surname: "", email: "", password: "" }); }}>
             {showForm ? <X className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
@@ -143,6 +159,12 @@ export default function CustomersPage() {
           </Button>
         </div>
       </div>
+
+      {importResult && (
+        <div className="rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+          {importResult}
+        </div>
+      )}
 
       {selected.size > 0 && (
         <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3">
