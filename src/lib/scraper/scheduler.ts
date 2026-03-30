@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { scrapeSahibinden } from "./sahibinden";
 import { prisma } from "../prisma";
+import { autoAssignListings } from "../auto-assign";
 
 let isRunning = false;
 
@@ -44,6 +45,13 @@ export async function runScraperForAllCities() {
       } catch (err) {
         console.error(`${city.name} kiralık hata:`, err);
       }
+    }
+    // Scraping bittikten sonra otomatik atama calistir
+    try {
+      await autoAssignListings();
+      console.log("Otomatik atama tamamlandi.");
+    } catch (err) {
+      console.error("Otomatik atama hata:", err);
     }
   } finally {
     isRunning = false;

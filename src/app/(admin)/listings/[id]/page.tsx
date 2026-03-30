@@ -63,12 +63,17 @@ export default function ListingDetailPage() {
   const [customers, setCustomers] = useState<Array<{ id: string; name: string; surname: string }>>([]);
   const [showAssign, setShowAssign] = useState(false);
   const [assignCustomer, setAssignCustomer] = useState("");
+  const [priceHistory, setPriceHistory] = useState<Array<{ oldPrice: number; newPrice: number; changedAt: string }>>([]);
 
   useEffect(() => {
     fetch(`/api/listings/${params.id}`)
       .then((r) => r.ok ? r.json() : null)
       .then((data) => { setListing(data); setLoading(false); })
       .catch(() => setLoading(false));
+
+    fetch(`/api/listings/${params.id}/history`)
+      .then((r) => r.ok ? r.json() : [])
+      .then(setPriceHistory);
   }, [params.id]);
 
   async function quickAssign() {
@@ -282,6 +287,27 @@ export default function ListingDetailPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Fiyat Gecmisi */}
+          {priceHistory.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Fiyat Gecmisi</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {priceHistory.map((h, i) => (
+                  <div key={i} className="flex items-center justify-between text-sm border-b border-[var(--border)] pb-1 last:border-0">
+                    <div>
+                      <span className="text-red-500 line-through">{formatPrice(h.oldPrice)}</span>
+                      <span className="mx-2">→</span>
+                      <span className="text-green-600 font-medium">{formatPrice(h.newPrice)}</span>
+                    </div>
+                    <span className="text-xs text-[var(--muted-foreground)]">{formatDate(h.changedAt)}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Hızlı Atama */}
           <Card>

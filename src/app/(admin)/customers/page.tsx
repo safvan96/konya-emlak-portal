@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
-import { Plus, Trash2, Edit, X, Link2 } from "lucide-react";
+import { Plus, Trash2, Edit, X, Link2, Download } from "lucide-react";
 import Link from "next/link";
 import { TableSkeleton } from "@/components/ui/skeleton";
 
@@ -128,11 +128,20 @@ export default function CustomersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Müşteri Yönetimi</h1>
-        <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm({ name: "", surname: "", email: "", password: "" }); }}>
-          {showForm ? <X className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
-          {showForm ? "İptal" : "Yeni Müşteri"}
-        </Button>
+        <h1 className="text-3xl font-bold">Musteri Yonetimi</h1>
+        <div className="flex gap-2">
+          <a
+            href="/api/customers/export"
+            download
+            className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-3 py-2 text-sm font-medium hover:bg-[var(--accent)] transition-colors"
+          >
+            <Download className="h-4 w-4" /> CSV
+          </a>
+          <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm({ name: "", surname: "", email: "", password: "" }); }}>
+            {showForm ? <X className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
+            {showForm ? "Iptal" : "Yeni Musteri"}
+          </Button>
+        </div>
       </div>
 
       {selected.size > 0 && (

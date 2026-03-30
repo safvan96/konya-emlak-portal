@@ -148,6 +148,23 @@ export async function scrapeSahibinden(
             });
 
             if (existing) {
+              // Mevcut ilan - fiyat degisimi kontrol et
+              await randomDelay();
+              const freshData = await scrapeListingDetail(page, link.href, link.id);
+              if (freshData?.price && existing.price && freshData.price !== existing.price) {
+                await prisma.priceHistory.create({
+                  data: {
+                    listingId: existing.id,
+                    oldPrice: existing.price,
+                    newPrice: freshData.price,
+                  },
+                });
+                await prisma.listing.update({
+                  where: { id: existing.id },
+                  data: { price: freshData.price },
+                });
+                console.log(`Fiyat guncellendi: ${existing.title} ${existing.price} -> ${freshData.price}`);
+              }
               result.duplicates++;
               continue;
             }

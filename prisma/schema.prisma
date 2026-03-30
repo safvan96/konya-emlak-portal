@@ -51,6 +51,7 @@ model User {
   favorites     Favorite[]
   logs          UserLog[]
   notes         ListingNote[]
+  preferences   CustomerPreference?
 
   @@map("users")
 }
@@ -95,6 +96,7 @@ model Listing {
   assignments     Assignment[]
   favorites       Favorite[]
   notes           ListingNote[]
+  priceHistory    PriceHistory[]
 
   @@index([cityId])
   @@index([categoryId])
@@ -164,6 +166,32 @@ model ScraperRun {
   completedAt   DateTime?
 
   @@map("scraper_runs")
+}
+
+model PriceHistory {
+  id        String   @id @default(cuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  oldPrice  Float?
+  newPrice  Float?
+  changedAt DateTime @default(now())
+
+  @@index([listingId])
+  @@map("price_history")
+}
+
+model CustomerPreference {
+  id           String  @id @default(cuid())
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cityIds      String[]
+  categoryIds  String[]
+  listingType  String?  // SALE, RENT, null=both
+  priceMin     Float?
+  priceMax     Float?
+  autoAssign   Boolean @default(false)
+
+  @@map("customer_preferences")
 }
 
 model ListingNote {
