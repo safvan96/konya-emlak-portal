@@ -28,6 +28,7 @@ const navItems = [
   { href: "/listings", label: "Ilanlar", icon: Building2 },
   { href: "/listings/map", label: "Ilce Haritasi", icon: MapPin },
   { href: "/review", label: "Inceleme", icon: ClipboardCheck },
+  { href: "/listing-compare", label: "Karsilastir", icon: BarChart3 },
   { href: "/customers", label: "Müşteriler", icon: Users },
   { href: "/assignments", label: "Atamalar", icon: Link2 },
   { href: "/logs", label: "Loglar", icon: ScrollText },
