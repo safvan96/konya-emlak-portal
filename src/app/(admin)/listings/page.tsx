@@ -52,8 +52,15 @@ export default function ListingsPage() {
   const [bulkAssignCustomers, setBulkAssignCustomers] = useState<Array<{ id: string; name: string; surname: string }>>([]);
   const [bulkAssignTarget, setBulkAssignTarget] = useState("");
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
+  const [citiesList, setCitiesList] = useState<Array<{ id: string; name: string }>>([]);
+  const [filterCity, setFilterCity] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
   const [showCategoryChange, setShowCategoryChange] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+
+  useEffect(() => {
+    fetch("/api/cities").then((r) => r.ok ? r.json() : []).then(setCitiesList);
+  }, []);
 
   const fetchListings = useCallback(async (page = 1) => {
     const params = new URLSearchParams({ page: String(page), limit: "20" });
@@ -61,6 +68,8 @@ export default function ListingsPage() {
     if (filterOwner) params.set("isFromOwner", filterOwner);
     if (filterStatus) params.set("status", filterStatus);
     if (filterType) params.set("listingType", filterType);
+    if (filterCity) params.set("cityId", filterCity);
+    if (filterCategory) params.set("categoryId", filterCategory);
 
     const res = await fetch(`/api/listings?${params}`);
     if (res.ok) {
@@ -69,7 +78,7 @@ export default function ListingsPage() {
       setPagination(data.pagination);
       setSelected(new Set());
     }
-  }, [search, filterOwner, filterStatus, filterType]);
+  }, [search, filterOwner, filterStatus, filterType, filterCity, filterCategory]);
 
   useEffect(() => {
     fetchListings();
@@ -175,7 +184,7 @@ export default function ListingsPage() {
           <CardTitle>Filtreler</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
             <Input
               placeholder="Ara (baslik, konum)..."
               value={searchInput}
@@ -198,9 +207,27 @@ export default function ListingsPage() {
               <option value="SOLD">Satıldı</option>
               <option value="RENTED">Kiralandı</option>
             </Select>
+            <Select value={filterCity} onChange={(e) => setFilterCity(e.target.value)}>
+              <option value="">Tum Sehirler</option>
+              {citiesList.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </Select>
+            <Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+              <option value="">Tum Kategoriler</option>
+              {categories.length > 0 ? categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              )) : (
+                <>
+                  <option value="daire">Daire</option>
+                  <option value="villa">Villa</option>
+                  <option value="arsa">Arsa</option>
+                </>
+              )}
+            </Select>
             <Select value={filterType} onChange={(e) => { setFilterType(e.target.value); }}>
-              <option value="">Tüm Tipler</option>
-              <option value="SALE">Satılık</option>
+              <option value="">Tum Tipler</option>
+              <option value="SALE">Satilik</option>
               <option value="RENT">Kiralık</option>
             </Select>
           </div>

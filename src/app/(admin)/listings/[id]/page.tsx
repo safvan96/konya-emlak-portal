@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,7 @@ import {
   Ruler,
   UserPlus,
   Printer,
+  Monitor,
   Building,
   Calendar,
   Users,
@@ -124,6 +126,12 @@ export default function ListingDetailPage() {
           <Button variant="ghost" size="sm" onClick={() => window.print()}>
             <Printer className="h-4 w-4" />
           </Button>
+          <Link
+            href={`/listings/${listing.id}/preview`}
+            className="flex items-center gap-1 text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)]"
+          >
+            <Monitor className="h-4 w-4" /> Onizleme
+          </Link>
           <a
             href={listing.sourceUrl}
             target="_blank"

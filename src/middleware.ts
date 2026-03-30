@@ -14,13 +14,17 @@ export default withAuth(
     }
 
     // Customer routes
-    if (path.startsWith("/my-listings") || path.startsWith("/favorites") || path.startsWith("/profile") || path.startsWith("/preferences") || path.startsWith("/compare") || path.startsWith("/notifications") || path.startsWith("/history")) {
+    if (
+      path.startsWith("/my-listings") || path.startsWith("/favorites") ||
+      path.startsWith("/profile") || path.startsWith("/preferences") ||
+      path.startsWith("/compare") || path.startsWith("/notifications") ||
+      path.startsWith("/history")
+    ) {
       if (token?.role === "ADMIN") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
     }
 
-    // IP adresini header olarak ilet (API route'larda loglama için)
     const response = NextResponse.next();
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
       || req.headers.get("x-real-ip")
@@ -47,10 +51,13 @@ export const config = {
     "/analytics/:path*",
     "/settings/:path*",
     "/reports/:path*",
-    "/api/reports/:path*",
     "/my-listings/:path*",
     "/favorites/:path*",
     "/profile/:path*",
+    "/preferences/:path*",
+    "/compare/:path*",
+    "/notifications/:path*",
+    "/history/:path*",
     "/api/listings/:path*",
     "/api/customers/:path*",
     "/api/assignments/:path*",
@@ -63,17 +70,12 @@ export const config = {
     "/api/profile/:path*",
     "/api/preferences/:path*",
     "/api/notes/:path*",
-    "/preferences/:path*",
-    "/compare/:path*",
-    "/notifications/:path*",
-    "/history/:path*",
-    "/api/history/:path*",
-    "/history/:path*",
-    "/api/history/:path*",
     "/api/notifications/:path*",
     "/api/analytics/:path*",
     "/api/sessions/:path*",
     "/api/images/:path*",
-    "/api/listings/bulk/:path*",
+    "/api/reports/:path*",
+    "/api/history/:path*",
+    "/api/mobile/:path*",
   ],
 };
