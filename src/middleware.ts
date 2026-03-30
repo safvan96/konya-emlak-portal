@@ -65,5 +65,8 @@ export const config = {
     "/compare/:path*",
     "/notifications/:path*",
     "/api/notifications/:path*",
+    "/api/analytics/:path*",
+    "/api/sessions/:path*",
+    "/api/images/:path*",
   ],
 };

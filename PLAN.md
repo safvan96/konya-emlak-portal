@@ -117,20 +117,40 @@
 
 ## Faz 8: Mobil Uygulama (Sonraki Etap) ⬜
 - [ ] React Native veya Flutter ile mobil uygulama
-- [x] API hazır (Next.js API routes mevcut)
-- [ ] Push notifications
-- [ ] Offline cache
+- [x] API hazır (26 endpoint)
+- [x] PWA offline cache (Service Worker)
+- [ ] Push notifications (native)
+
+## Ekstra Ozellikler (Plan Disinda Eklenen) ✅
+- [x] Ilan karsilastirma (yan yana tablo)
+- [x] Musteri ilan notlari
+- [x] Fiyat degisim takibi + alarm
+- [x] Otomatik atama sistemi (tercih bazli)
+- [x] Musteri tercihleri sayfasi
+- [x] Admin istatistikler sayfasi (analytics)
+- [x] Admin sistem ayarlari sayfasi
+- [x] Admin musteri detay sayfasi
+- [x] Bildirim sistemi (admin->musteri)
+- [x] WhatsApp paylasim + link kopyalama
+- [x] CSV import/export (ilanlar, musteriler, loglar)
+- [x] Klavye kisayollari
+- [x] Oturum yonetimi (zorla deaktif)
+- [x] 44 test (Vitest)
+- [x] PWA + Service Worker
+- [x] SEO meta tags
 
 ---
 
-## Öncelik Sırası
-1. **Faz 0 + 1**: ✅ Tamamlandı
-2. **Faz 2**: ✅ Tamamlandı
-3. **Faz 3**: ✅ Tamamlandı
-4. **Faz 4**: ✅ Tamamlandı
-5. **Faz 5 + 6**: ✅ Tamamlandı
-6. **Faz 7**: ✅ Büyük ölçüde tamamlandı (SSL domain bağlandığında)
-7. **Faz 8**: Mobil → genişle
+## Proje Metrikleri
+- **106 dosya**, 17,781 satir kod
+- **26 API endpoint**, 20 sayfa, 44 test
+- **11 veritabani modeli**
+- **15 commit**
+
+## Durum
+1. **Faz 0-7**: ✅ Tamamlandi (SSL haric)
+2. **Faz 8**: Mobil uygulama → sonraki etap
+3. **Ekstra**: ✅ 16 plan disi ozellik eklendi
 
 ## Kritik Kararlar
 - **Scraping frekansı**: Günde 2 kez (sabah 08:00, akşam 20:00) - sahibinden'i sıkmamak için
