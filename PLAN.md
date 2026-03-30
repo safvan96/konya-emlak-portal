@@ -142,17 +142,19 @@
 ---
 
 ## Proje Metrikleri
-- **110+ dosya**, 19,700+ satir kod
-- **26 API endpoint**, 20 sayfa, 44 test
+- **115+ dosya**, 21,500+ satir kod
+- **26 API endpoint**, 20 sayfa, 61 test
 - **11 veritabani modeli**, 4 scraper modu
-- **17 commit**
-- **177 gerçek ilan** DB'de (137 Emlakjet, 40 demo/test)
+- **22 commit**
+- **178 ilan** DB'de (92 aktif sahip, 86 emlakçı filtrelenmiş)
+- **9 müşteri**, 58 ilan ataması
 
 ## Durum
-1. **Faz 0-7**: ✅ Tamamlandi (SSL haric)
-2. **Faz 8**: Mobil uygulama → sonraki etap
+1. **Faz 0-7**: ✅ Tamamlandi (SSL haric - domain bekleniyor)
+2. **Faz 8**: Mobil uygulama → sonraki etap (PWA + API hazır)
 3. **Ekstra**: ✅ 16 plan disi ozellik eklendi
-4. **Scraper**: ✅ Emlakjet scraper çalışıyor - 137 gerçek ilan çekildi
+4. **Scraper**: ✅ Emlakjet scraper production'da çalışıyor
+5. **Production**: ✅ PM2 + scheduler (08:00/20:00) + dış erişim aktif
 
 ## Kritik Kararlar
 - **Scraping frekansı**: Günde 2 kez (sabah 08:00, akşam 20:00) - sahibinden'i sıkmamak için
