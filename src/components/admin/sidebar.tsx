@@ -16,6 +16,7 @@ import {
   LogOut,
   Menu,
   X,
+  BarChart3,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/customers", label: "Müşteriler", icon: Users },
   { href: "/assignments", label: "Atamalar", icon: Link2 },
   { href: "/logs", label: "Loglar", icon: ScrollText },
+  { href: "/analytics", label: "İstatistikler", icon: BarChart3 },
   { href: "/scraper", label: "Scraper", icon: Bot },
   { href: "/cities", label: "Şehirler", icon: MapPin },
 ];

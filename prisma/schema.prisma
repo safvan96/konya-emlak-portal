@@ -50,6 +50,7 @@ model User {
   assignments   Assignment[]
   favorites     Favorite[]
   logs          UserLog[]
+  notes         ListingNote[]
 
   @@map("users")
 }
@@ -93,6 +94,7 @@ model Listing {
   updatedAt       DateTime      @updatedAt
   assignments     Assignment[]
   favorites       Favorite[]
+  notes           ListingNote[]
 
   @@index([cityId])
   @@index([categoryId])
@@ -162,6 +164,20 @@ model ScraperRun {
   completedAt   DateTime?
 
   @@map("scraper_runs")
+}
+
+model ListingNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, listingId])
+  @@map("listing_notes")
 }
 
 model BlacklistKeyword {

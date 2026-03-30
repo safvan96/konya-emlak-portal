@@ -44,6 +44,7 @@ export const config = {
     "/logs/:path*",
     "/scraper/:path*",
     "/cities/:path*",
+    "/analytics/:path*",
     "/my-listings/:path*",
     "/favorites/:path*",
     "/profile/:path*",

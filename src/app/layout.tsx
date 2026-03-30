@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   title: "Emlak Portal - Sahibinden Direkt İlanlar",
   description:
     "Sahibinden direkt satılık ve kiralık emlak ilanları portalı",
+  manifest: "/manifest.json",
+  themeColor: "#2563eb",
 };
 
 export default function RootLayout({

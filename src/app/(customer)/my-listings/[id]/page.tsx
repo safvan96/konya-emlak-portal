@@ -16,6 +16,8 @@ import {
   Heart,
   ChevronLeft,
   ChevronRight,
+  StickyNote,
+  Save,
 } from "lucide-react";
 
 interface Listing {
@@ -46,6 +48,8 @@ export default function ListingDetailPage() {
   const [loading, setLoading] = useState(true);
   const [imageIndex, setImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [note, setNote] = useState("");
+  const [noteSaved, setNoteSaved] = useState(false);
 
   useEffect(() => {
     fetch(`/api/listings/${params.id}`)
@@ -57,7 +61,22 @@ export default function ListingDetailPage() {
     fetch("/api/favorites").then((r) => r.ok ? r.json() : []).then((favs) => {
       setIsFavorited(favs.some((f: { listing: { id: string } }) => f.listing.id === params.id));
     });
+
+    // Notu yukle
+    fetch(`/api/notes?listingId=${params.id}`).then((r) => r.ok ? r.json() : null).then((n) => {
+      if (n?.content) setNote(n.content);
+    });
   }, [params.id]);
+
+  async function saveNote() {
+    await fetch("/api/notes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listingId: params.id, content: note }),
+    });
+    setNoteSaved(true);
+    setTimeout(() => setNoteSaved(false), 2000);
+  }
 
   async function toggleFavorite() {
     if (!listing) return;
@@ -140,15 +159,39 @@ export default function ListingDetailPage() {
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Açıklama */}
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Açıklama</CardTitle>
+              <CardTitle>Aciklama</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                {listing.description || "Açıklama mevcut değil."}
+                {listing.description || "Aciklama mevcut degil."}
               </p>
+            </CardContent>
+          </Card>
+
+          {/* Kisisel Notlar */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <StickyNote className="h-5 w-5" />
+                Notlarim
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <textarea
+                value={note}
+                onChange={(e) => { setNote(e.target.value); setNoteSaved(false); }}
+                placeholder="Bu ilan hakkinda notlarinizi yazin..."
+                className="w-full rounded-md border border-[var(--border)] bg-transparent px-3 py-2 text-sm min-h-[80px] resize-y focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+              />
+              <div className="flex items-center gap-2">
+                <Button size="sm" onClick={saveNote}>
+                  <Save className="h-3 w-3 mr-1" /> Kaydet
+                </Button>
+                {noteSaved && <span className="text-xs text-green-600">Kaydedildi</span>}
+              </div>
             </CardContent>
           </Card>
         </div>
