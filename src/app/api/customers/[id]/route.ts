@@ -60,10 +60,16 @@ export async function GET(
     take: 20,
   });
 
+  // Tercihler
+  const preferences = await prisma.customerPreference.findUnique({
+    where: { userId: params.id },
+  });
+
   return NextResponse.json({
     customer,
     recentLogs,
     assignments,
     favorites,
+    preferences,
   });
 }
