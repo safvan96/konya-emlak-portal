@@ -101,11 +101,28 @@ export async function scrapeSahibinden(
     // Cookie consent ve popup'lari otomatik kapat
     page.on("dialog", async (dialog) => { await dialog.dismiss(); });
     await page.evaluateOnNewDocument(() => {
-      // Cookie consent banner'i gizle
       const style = document.createElement("style");
       style.textContent = "#onetrust-consent-sdk, .cookie-consent, [class*='cookie'], [id*='cookie'] { display: none !important; }";
       document.head.appendChild(style);
     });
+
+    // Sahibinden login gerekiyorsa cookie ile giris yap
+    const sbEmail = process.env.SAHIBINDEN_EMAIL;
+    const sbPassword = process.env.SAHIBINDEN_PASSWORD;
+    if (sbEmail && sbPassword) {
+      try {
+        console.log("Sahibinden login yapiliyor...");
+        await page.goto("https://secure.sahibinden.com/login", { waitUntil: "networkidle2", timeout: 30000 });
+        await page.type('input[name="username"], input[type="email"]', sbEmail, { delay: 50 });
+        await page.type('input[name="password"], input[type="password"]', sbPassword, { delay: 50 });
+        await page.click('button[type="submit"], #loginSubmit');
+        await page.waitForNavigation({ waitUntil: "networkidle2", timeout: 15000 }).catch(() => {});
+        console.log("Login tamamlandi, URL:", page.url());
+        await randomDelay();
+      } catch (loginErr) {
+        console.log("Login basarisiz, devam ediliyor:", loginErr instanceof Error ? loginErr.message : "bilinmeyen hata");
+      }
+    }
 
     // sahibinden.com ilan listesi URL'si - şehir slug'ı dinamik
     const typeSlug = listingType === "SALE" ? "satilik" : "kiralik";
@@ -119,6 +136,13 @@ export async function scrapeSahibinden(
 
         console.log(`Sayfa taraniyor: ${url}`);
         await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+
+        // Login redirect kontrolu
+        if (page.url().includes("login") || page.url().includes("secure.sahibinden")) {
+          console.error("Sahibinden login gerektiriyor! SAHIBINDEN_EMAIL/PASSWORD env ayarlayin.");
+          throw new Error("Sahibinden login gerekli - VPS IP engellenmiş olabilir");
+        }
+
         await randomDelay();
 
         // İlan linklerini topla
