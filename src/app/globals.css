@@ -85,3 +85,11 @@ body {
 .slide-in-from-right-full {
   animation: slide-in-from-right 0.3s ease-out;
 }
+
+/* Print */
+@media print {
+  aside, header, nav, button, .no-print { display: none !important; }
+  main { margin: 0 !important; padding: 0 !important; }
+  body { background: white !important; color: black !important; }
+  * { box-shadow: none !important; }
+}

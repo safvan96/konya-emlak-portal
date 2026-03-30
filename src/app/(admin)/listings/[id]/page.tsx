@@ -14,6 +14,7 @@ import {
   Home,
   Ruler,
   UserPlus,
+  Printer,
   Building,
   Calendar,
   Users,
@@ -119,14 +120,19 @@ export default function ListingDetailPage() {
           <ArrowLeft className="h-4 w-4 mr-2" /> Geri
         </Button>
         <h1 className="text-2xl font-bold flex-1 truncate">{listing.title}</h1>
-        <a
-          href={listing.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
-        >
-          <ExternalLink className="h-4 w-4" /> Sahibinden
-        </a>
+        <div className="flex items-center gap-2 no-print">
+          <Button variant="ghost" size="sm" onClick={() => window.print()}>
+            <Printer className="h-4 w-4" />
+          </Button>
+          <a
+            href={listing.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
+          >
+            <ExternalLink className="h-4 w-4" /> Sahibinden
+          </a>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

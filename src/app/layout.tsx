@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/shared/auth-provider";
 import { ToastProvider } from "@/components/ui/toast";
+import { KeyboardShortcuts } from "@/components/shared/keyboard-shortcuts";
 
 export const metadata: Metadata = {
   title: "Emlak Portal - Sahibinden Direkt İlanlar",
@@ -20,7 +21,10 @@ export default function RootLayout({
     <html lang="tr">
       <body>
         <AuthProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <KeyboardShortcuts />
+            {children}
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

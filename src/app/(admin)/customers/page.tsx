@@ -10,6 +10,7 @@ import { formatDate } from "@/lib/utils";
 import { Plus, Trash2, Edit, X, Link2, Download, Upload } from "lucide-react";
 import Link from "next/link";
 import { TableSkeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/toast";
 
 interface Customer {
   id: string;
@@ -29,6 +30,7 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importResult, setImportResult] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchCustomers().finally(() => setLoading(false));
@@ -43,17 +45,21 @@ export default function CustomersPage() {
     e.preventDefault();
 
     if (editId) {
-      await fetch("/api/customers", {
+      const res = await fetch("/api/customers", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: editId, ...form, password: form.password || undefined }),
       });
+      if (res.ok) toast("Musteri guncellendi", "success");
+      else { const d = await res.json(); toast(d.error || "Hata", "error"); return; }
     } else {
-      await fetch("/api/customers", {
+      const res = await fetch("/api/customers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      if (res.ok) toast("Musteri olusturuldu", "success");
+      else { const d = await res.json(); toast(d.error || "Hata", "error"); return; }
     }
 
     setForm({ name: "", surname: "", email: "", password: "" });

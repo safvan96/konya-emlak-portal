@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   BarChart3,
+  Settings,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 
@@ -29,6 +30,7 @@ const navItems = [
   { href: "/analytics", label: "İstatistikler", icon: BarChart3 },
   { href: "/scraper", label: "Scraper", icon: Bot },
   { href: "/cities", label: "Şehirler", icon: MapPin },
+  { href: "/settings", label: "Ayarlar", icon: Settings },
 ];
 
 export function AdminSidebar() {

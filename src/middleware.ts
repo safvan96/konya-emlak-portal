@@ -45,6 +45,7 @@ export const config = {
     "/scraper/:path*",
     "/cities/:path*",
     "/analytics/:path*",
+    "/settings/:path*",
     "/my-listings/:path*",
     "/favorites/:path*",
     "/profile/:path*",
