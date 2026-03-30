@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { createCustomerSchema, updateCustomerSchema, validateBody } from "@/lib/validations";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -34,11 +35,11 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { email, password, name, surname } = body;
-
-  if (!email || !password || !name || !surname) {
-    return NextResponse.json({ error: "Tüm alanlar gerekli" }, { status: 400 });
+  const validation = validateBody(createCustomerSchema, body);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
+  const { email, password, name, surname } = validation.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -72,7 +73,11 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { id, name, surname, email, isActive, password } = body;
+  const validation = validateBody(updateCustomerSchema, body);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+  const { id, name, surname, email, isActive, password } = validation.data;
 
   const data: Record<string, unknown> = {};
   if (name) data.name = name;

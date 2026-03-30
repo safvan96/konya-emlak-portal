@@ -8,7 +8,8 @@ import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatPrice, formatDate } from "@/lib/utils";
-import { ExternalLink, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, Trash2, ChevronLeft, ChevronRight, Eye, Download, UserPlus } from "lucide-react";
+import Link from "next/link";
 
 interface Listing {
   id: string;
@@ -42,6 +43,10 @@ export default function ListingsPage() {
   const [filterOwner, setFilterOwner] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterType, setFilterType] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [showBulkAssign, setShowBulkAssign] = useState(false);
+  const [bulkAssignCustomers, setBulkAssignCustomers] = useState<Array<{ id: string; name: string; surname: string }>>([]);
+  const [bulkAssignTarget, setBulkAssignTarget] = useState("");
 
   const fetchListings = useCallback(async (page = 1) => {
     const params = new URLSearchParams({ page: String(page), limit: "20" });
@@ -55,6 +60,7 @@ export default function ListingsPage() {
       const data = await res.json();
       setListings(data.listings);
       setPagination(data.pagination);
+      setSelected(new Set());
     }
   }, [search, filterOwner, filterStatus, filterType]);
 
@@ -77,9 +83,78 @@ export default function ListingsPage() {
     fetchListings(pagination.page);
   }
 
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selected.size === listings.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(listings.map((l) => l.id)));
+    }
+  }
+
+  async function bulkUpdateStatus(status: string) {
+    if (selected.size === 0) return;
+    if (!confirm(`${selected.size} ilanın durumunu "${status}" olarak değiştirmek istediğinize emin misiniz?`)) return;
+
+    await fetch("/api/listings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: Array.from(selected), status }),
+    });
+    fetchListings(pagination.page);
+  }
+
+  async function bulkDelete() {
+    if (selected.size === 0) return;
+    if (!confirm(`${selected.size} ilanı silmek istediğinize emin misiniz?`)) return;
+
+    await fetch(`/api/listings?ids=${Array.from(selected).join(",")}`, { method: "DELETE" });
+    fetchListings(pagination.page);
+  }
+
+  async function openBulkAssign() {
+    if (bulkAssignCustomers.length === 0) {
+      const res = await fetch("/api/customers");
+      if (res.ok) setBulkAssignCustomers(await res.json());
+    }
+    setShowBulkAssign(true);
+  }
+
+  async function doBulkAssign() {
+    if (!bulkAssignTarget || selected.size === 0) return;
+    await fetch("/api/assignments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: bulkAssignTarget, listingIds: Array.from(selected) }),
+    });
+    setShowBulkAssign(false);
+    setBulkAssignTarget("");
+    setSelected(new Set());
+  }
+
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">İlan Yönetimi</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">İlan Yönetimi</h1>
+        <a
+          href={`/api/listings/export?${new URLSearchParams({
+            ...(filterOwner && { isFromOwner: filterOwner }),
+            ...(filterStatus && { status: filterStatus }),
+            ...(filterType && { listingType: filterType }),
+          }).toString()}`}
+          download
+          className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-3 py-2 text-sm font-medium hover:bg-[var(--accent)] transition-colors"
+        >
+          <Download className="h-4 w-4" /> CSV İndir
+        </a>
+      </div>
 
       <Card>
         <CardHeader>
@@ -114,11 +189,51 @@ export default function ListingsPage() {
         </CardContent>
       </Card>
 
+      {/* Toplu İşlemler */}
+      {selected.size > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3 flex-wrap">
+            <span className="text-sm font-medium">{selected.size} ilan secildi</span>
+            <div className="flex gap-2 ml-auto flex-wrap">
+              <Button size="sm" variant="outline" onClick={openBulkAssign}>
+                <UserPlus className="h-3 w-3 mr-1" /> Musteriye Ata
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("ACTIVE")}>Aktif Yap</Button>
+              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("PASSIVE")}>Pasif Yap</Button>
+              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("SOLD")}>Satildi</Button>
+              <Button size="sm" variant="destructive" onClick={bulkDelete}>Sil</Button>
+              <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowBulkAssign(false); }}>Iptal</Button>
+            </div>
+          </div>
+          {showBulkAssign && (
+            <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] px-4 py-3">
+              <Select value={bulkAssignTarget} onChange={(e) => setBulkAssignTarget(e.target.value)} className="flex-1">
+                <option value="">Musteri secin...</option>
+                {bulkAssignCustomers.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name} {c.surname}</option>
+                ))}
+              </Select>
+              <Button size="sm" onClick={doBulkAssign} disabled={!bulkAssignTarget}>
+                {selected.size} Ilan Ata
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       <Card>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10">
+                  <input
+                    type="checkbox"
+                    checked={listings.length > 0 && selected.size === listings.length}
+                    onChange={toggleSelectAll}
+                    className="rounded"
+                  />
+                </TableHead>
                 <TableHead>Başlık</TableHead>
                 <TableHead>Fiyat</TableHead>
                 <TableHead>Şehir</TableHead>
@@ -132,11 +247,19 @@ export default function ListingsPage() {
             </TableHeader>
             <TableBody>
               {listings.map((listing) => (
-                <TableRow key={listing.id}>
+                <TableRow key={listing.id} className={selected.has(listing.id) ? "bg-[var(--primary)]/5" : ""}>
+                  <TableCell>
+                    <input
+                      type="checkbox"
+                      checked={selected.has(listing.id)}
+                      onChange={() => toggleSelect(listing.id)}
+                      className="rounded"
+                    />
+                  </TableCell>
                   <TableCell className="max-w-[200px]">
-                    <div className="truncate font-medium" title={listing.title}>
+                    <Link href={`/listings/${listing.id}`} className="truncate font-medium hover:text-[var(--primary)] hover:underline block" title={listing.title}>
                       {listing.title}
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell>{formatPrice(listing.price)}</TableCell>
                   <TableCell>{listing.city.name}</TableCell>
@@ -168,6 +291,13 @@ export default function ListingsPage() {
                   <TableCell className="text-xs">{formatDate(listing.createdAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
+                      <Link
+                        href={`/listings/${listing.id}`}
+                        className="p-1 hover:bg-[var(--accent)] rounded"
+                        title="Detay"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Link>
                       <a
                         href={listing.sourceUrl}
                         target="_blank"
@@ -188,7 +318,7 @@ export default function ListingsPage() {
               ))}
               {listings.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-[var(--muted-foreground)]">
+                  <TableCell colSpan={10} className="text-center py-8 text-[var(--muted-foreground)]">
                     İlan bulunamadı
                   </TableCell>
                 </TableRow>

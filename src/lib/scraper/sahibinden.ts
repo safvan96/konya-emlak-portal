@@ -96,9 +96,9 @@ export async function scrapeSahibinden(
     await page.setUserAgent(randomUserAgent());
     await page.setViewport({ width: 1366, height: 768 });
 
-    // sahibinden.com ilan listesi URL'si
+    // sahibinden.com ilan listesi URL'si - şehir slug'ı dinamik
     const typeSlug = listingType === "SALE" ? "satilik" : "kiralik";
-    const baseUrl = `https://www.sahibinden.com/${typeSlug}-konya`;
+    const baseUrl = `https://www.sahibinden.com/${typeSlug}-${city.slug}`;
 
     for (let pageNum = 0; pageNum < maxPages; pageNum++) {
       try {
@@ -241,7 +241,8 @@ export async function scrapeSahibinden(
 async function scrapeListingDetail(
   page: Page,
   url: string,
-  sahibindenId: string
+  sahibindenId: string,
+  retries: number = 2
 ): Promise<ScrapedListing | null> {
   try {
     await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
@@ -323,6 +324,11 @@ async function scrapeListingDetail(
       ...data,
     };
   } catch (err) {
+    if (retries > 0) {
+      console.log(`Retry: ${url} (${retries} kaldı)`);
+      await randomDelay();
+      return scrapeListingDetail(page, url, sahibindenId, retries - 1);
+    }
     console.error(`Detay sayfa hata: ${url}`, err);
     return null;
   }

@@ -24,6 +24,11 @@ export function formatDate(date: Date | string): string {
   }).format(new Date(date));
 }
 
+export function proxyImageUrl(url: string): string {
+  if (!url || !url.includes("sahibinden.com")) return url;
+  return `/api/images?url=${encodeURIComponent(url)}`;
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

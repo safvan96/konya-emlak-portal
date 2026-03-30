@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createLog } from "@/lib/log";
+import { assignListingsSchema, validateBody } from "@/lib/validations";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -42,17 +43,11 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { userId, listingIds } = body as {
-    userId: string;
-    listingIds: string[];
-  };
-
-  if (!userId || !listingIds || listingIds.length === 0) {
-    return NextResponse.json(
-      { error: "Müşteri ve en az bir ilan gerekli" },
-      { status: 400 }
-    );
+  const validation = validateBody(assignListingsSchema, body);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
+  const { userId, listingIds } = validation.data;
 
   // Müşteri var mı kontrol
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -60,31 +55,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Müşteri bulunamadı" }, { status: 404 });
   }
 
-  // Toplu atama
-  const results = [];
-  for (const listingId of listingIds) {
-    try {
-      const assignment = await prisma.assignment.create({
-        data: {
-          userId,
-          listingId,
-          assignedBy: session.user.id,
-        },
-      });
-      results.push(assignment);
-    } catch {
-      // Duplicate - zaten atanmış, atla
-    }
-  }
+  // Toplu atama - skipDuplicates ile tek seferde
+  const result = await prisma.assignment.createMany({
+    data: listingIds.map((listingId) => ({
+      userId,
+      listingId,
+      assignedBy: session.user.id,
+    })),
+    skipDuplicates: true,
+  });
 
   await createLog(
     session.user.id,
     "ASSIGN_LISTINGS",
-    `${results.length} ilan ${user.name} ${user.surname} müşterisine atandı`
+    `${result.count} ilan ${user.name} ${user.surname} müşterisine atandı`
   );
 
   return NextResponse.json({
-    assigned: results.length,
+    assigned: result.count,
     total: listingIds.length,
   });
 }
@@ -100,6 +88,11 @@ export async function DELETE(req: NextRequest) {
 
   if (!id) return NextResponse.json({ error: "ID gerekli" }, { status: 400 });
 
-  await prisma.assignment.delete({ where: { id } });
-  return NextResponse.json({ success: true });
+  try {
+    const assignment = await prisma.assignment.delete({ where: { id } });
+    await createLog(session.user.id, "REMOVE_ASSIGNMENT", `Atama kaldırıldı: ${id}`);
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Atama bulunamadı" }, { status: 404 });
+  }
 }

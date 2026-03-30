@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,6 +83,11 @@ export default function LoginPage() {
               {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
             </Button>
           </form>
+          <div className="mt-4 text-center">
+            <Link href="/" className="text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">
+              Ana Sayfaya Dön
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { Trash2, Plus, Search } from "lucide-react";
+import Link from "next/link";
 
 interface Customer {
   id: string;
@@ -40,6 +42,15 @@ interface Listing {
 }
 
 export default function AssignmentsPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-[var(--muted-foreground)]">Yükleniyor...</div>}>
+      <AssignmentsContent />
+    </Suspense>
+  );
+}
+
+function AssignmentsContent() {
+  const searchParams = useSearchParams();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -49,8 +60,13 @@ export default function AssignmentsPage() {
   const [listingSearch, setListingSearch] = useState("");
 
   useEffect(() => {
-    fetch("/api/customers").then((r) => r.json()).then(setCustomers);
-  }, []);
+    fetch("/api/customers").then((r) => r.json()).then((data) => {
+      setCustomers(data);
+      // URL'den müşteri ID'si geliyorsa otomatik seç
+      const customerId = searchParams.get("customer");
+      if (customerId) setSelectedCustomer(customerId);
+    });
+  }, [searchParams]);
 
   const fetchAssignments = useCallback(async () => {
     if (!selectedCustomer) return;
@@ -199,7 +215,9 @@ export default function AssignmentsPage() {
                   {assignments.map((a) => (
                     <TableRow key={a.id}>
                       <TableCell className="max-w-[250px]">
-                        <div className="truncate font-medium">{a.listing.title}</div>
+                        <Link href={`/listings/${a.listing.id}`} className="truncate font-medium hover:text-[var(--primary)] hover:underline block">
+                          {a.listing.title}
+                        </Link>
                       </TableCell>
                       <TableCell>{formatPrice(a.listing.price)}</TableCell>
                       <TableCell>{a.listing.city.name}</TableCell>
@@ -231,3 +249,4 @@ export default function AssignmentsPage() {
     </div>
   );
 }
+

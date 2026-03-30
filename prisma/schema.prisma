@@ -99,6 +99,9 @@ model Listing {
   @@index([isFromOwner])
   @@index([status])
   @@index([listingType])
+  @@index([isFromOwner, status])
+  @@index([cityId, status, isFromOwner])
+  @@index([createdAt])
   @@map("listings")
 }
 

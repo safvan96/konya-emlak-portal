@@ -77,6 +77,10 @@ export async function filterListing(
     /coldwell/i,
     /turyap/i,
     /keller/i,
+    /danışman/i,
+    /consultant/i,
+    /estate/i,
+    /realty/i,
   ];
 
   for (const pattern of agentNamePatterns) {
@@ -90,6 +94,17 @@ export async function filterListing(
   const phones = description.match(phonePattern);
   if (phones && phones.length >= 3) {
     matchedKeywords.push("çoklu telefon numarası (muhtemelen emlakçı)");
+  }
+
+  // 4. Web sitesi/URL pattern (emlakçılar genellikle site linki koyar)
+  const urlPattern = /(?:www\.|https?:\/\/)[\w.-]+\.(?:com|net|org|com\.tr)/gi;
+  const urls = description.match(urlPattern);
+  if (urls && urls.length > 0) {
+    // Sahibinden kendi URL'lerini hariç tut
+    const externalUrls = urls.filter((u) => !u.includes("sahibinden"));
+    if (externalUrls.length > 0) {
+      matchedKeywords.push(`harici web sitesi: ${externalUrls[0]}`);
+    }
   }
 
   // 4. "Detaylı bilgi için" + telefon pattern

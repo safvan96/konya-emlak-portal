@@ -6,6 +6,10 @@ import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import { Heart, MapPin, Ruler, Home, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { ImageWithFallback } from "@/components/ui/image-fallback";
+import { CardSkeleton } from "@/components/ui/skeleton";
 
 interface Assignment {
   id: string;
@@ -31,11 +35,16 @@ export default function MyListingsPage() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [filterCategory, setFilterCategory] = useState("");
   const [filterType, setFilterType] = useState("");
+  const [filterDistrict, setFilterDistrict] = useState("");
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+  const [searchText, setSearchText] = useState("");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAssignments();
-    fetchFavorites();
+    Promise.all([fetchAssignments(), fetchFavorites()]).finally(() => setLoading(false));
   }, []);
 
   async function fetchAssignments() {
@@ -66,28 +75,83 @@ export default function MyListingsPage() {
   }
 
   const filtered = assignments.filter((a) => {
+    if (searchText && !a.listing.title.toLowerCase().includes(searchText.toLowerCase())) return false;
     if (filterCategory && a.listing.category?.name !== filterCategory) return false;
     if (filterType && a.listing.listingType !== filterType) return false;
+    if (filterDistrict && a.listing.district !== filterDistrict) return false;
+    if (priceMin && a.listing.price && a.listing.price < Number(priceMin)) return false;
+    if (priceMax && a.listing.price && a.listing.price > Number(priceMax)) return false;
     return true;
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case "price-asc": return (a.listing.price || 0) - (b.listing.price || 0);
+      case "price-desc": return (b.listing.price || 0) - (a.listing.price || 0);
+      case "newest": default: return 0;
+    }
+  });
+
   const categories = [...new Set(assignments.map((a) => a.listing.category?.name).filter(Boolean))];
+  const districts = [...new Set(assignments.map((a) => a.listing.district).filter((d): d is string => !!d))];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">İlanlarım</h1>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => <CardSkeleton key={i} />)}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">İlanlarım</h1>
 
-      <div className="flex gap-4">
-        <Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-48">
+      <div className="flex flex-wrap gap-3">
+        <Input
+          placeholder="Ara..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          className="w-48"
+        />
+        <Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-44">
           <option value="">Tüm Kategoriler</option>
           {categories.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </Select>
-        <Select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="w-40">
+        <Select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="w-32">
           <option value="">Tümü</option>
           <option value="SALE">Satılık</option>
           <option value="RENT">Kiralık</option>
+        </Select>
+        <Select value={filterDistrict} onChange={(e) => setFilterDistrict(e.target.value)} className="w-40">
+          <option value="">Tüm İlçeler</option>
+          {districts.map((d) => (
+            <option key={d} value={d}>{d}</option>
+          ))}
+        </Select>
+        <Input
+          type="number"
+          placeholder="Min fiyat"
+          value={priceMin}
+          onChange={(e) => setPriceMin(e.target.value)}
+          className="w-32"
+        />
+        <Input
+          type="number"
+          placeholder="Max fiyat"
+          value={priceMax}
+          onChange={(e) => setPriceMax(e.target.value)}
+          className="w-32"
+        />
+        <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="w-40">
+          <option value="newest">En Yeni</option>
+          <option value="price-asc">Fiyat (Artan)</option>
+          <option value="price-desc">Fiyat (Azalan)</option>
         </Select>
         <span className="self-center text-sm text-[var(--muted-foreground)]">
           {filtered.length} ilan
@@ -102,14 +166,15 @@ export default function MyListingsPage() {
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((a) => (
+          {sorted.map((a) => (
             <Card key={a.id} className="overflow-hidden">
               {a.listing.imageUrls.length > 0 && (
                 <div className="aspect-video bg-[var(--muted)] relative">
-                  <img
+                  <ImageWithFallback
                     src={a.listing.imageUrls[0]}
                     alt={a.listing.title}
                     className="w-full h-full object-cover"
+                    fallbackClassName="w-full h-full"
                   />
                   <button
                     onClick={() => toggleFavorite(a.listing.id)}
@@ -125,7 +190,7 @@ export default function MyListingsPage() {
                 </div>
               )}
               <CardContent className="p-4 space-y-2">
-                <h3 className="font-semibold text-sm line-clamp-2">{a.listing.title}</h3>
+                <Link href={`/my-listings/${a.listing.id}`} className="font-semibold text-sm line-clamp-2 hover:text-[var(--primary)] hover:underline block">{a.listing.title}</Link>
                 <p className="text-lg font-bold text-[var(--primary)]">
                   {formatPrice(a.listing.price)}
                 </p>

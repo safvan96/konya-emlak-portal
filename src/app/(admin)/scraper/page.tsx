@@ -7,7 +7,8 @@ import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
-import { Play } from "lucide-react";
+import { Play, Plus, X, RefreshCw } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface City {
   id: string;
@@ -31,17 +32,49 @@ interface ScraperRun {
   completedAt: string | null;
 }
 
+interface BlacklistKeyword {
+  id: string;
+  keyword: string;
+}
+
 export default function ScraperPage() {
   const [cities, setCities] = useState<City[]>([]);
   const [runs, setRuns] = useState<ScraperRun[]>([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [listingType, setListingType] = useState("SALE");
+  const [maxPages, setMaxPages] = useState(3);
   const [loading, setLoading] = useState(false);
+  const [keywords, setKeywords] = useState<BlacklistKeyword[]>([]);
+  const [newKeyword, setNewKeyword] = useState("");
 
   useEffect(() => {
     fetch("/api/cities").then((r) => r.json()).then(setCities);
     fetchRuns();
+    fetchKeywords();
   }, []);
+
+  async function fetchKeywords() {
+    const res = await fetch("/api/blacklist");
+    if (res.ok) setKeywords(await res.json());
+  }
+
+  async function addKeyword() {
+    if (!newKeyword.trim()) return;
+    const res = await fetch("/api/blacklist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ keyword: newKeyword }),
+    });
+    if (res.ok) {
+      setNewKeyword("");
+      fetchKeywords();
+    }
+  }
+
+  async function deleteKeyword(id: string) {
+    await fetch(`/api/blacklist?id=${id}`, { method: "DELETE" });
+    fetchKeywords();
+  }
 
   async function fetchRuns() {
     const res = await fetch("/api/scraper");
@@ -54,11 +87,24 @@ export default function ScraperPage() {
     await fetch("/api/scraper", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ citySlug: selectedCity, listingType, maxPages: 3 }),
+      body: JSON.stringify({ citySlug: selectedCity, listingType, maxPages }),
     });
     setLoading(false);
-    // Birkaç saniye sonra durumu kontrol et
-    setTimeout(fetchRuns, 5000);
+    fetchRuns();
+    // Çalışıyorken her 10 saniyede bir otomatik yenile
+    const interval = setInterval(async () => {
+      const res = await fetch("/api/scraper");
+      if (res.ok) {
+        const data = await res.json();
+        setRuns(data);
+        // Çalışan yoksa durdur
+        if (!data.some((r: ScraperRun) => r.status === "running")) {
+          clearInterval(interval);
+        }
+      }
+    }, 10000);
+    // 5 dakika sonra otomatik durdur
+    setTimeout(() => clearInterval(interval), 5 * 60 * 1000);
   }
 
   const statusBadge = (status: string) => {
@@ -96,11 +142,23 @@ export default function ScraperPage() {
                 <option value="RENT">Kiralık</option>
               </Select>
             </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Sayfa</label>
+              <Select value={String(maxPages)} onChange={(e) => setMaxPages(Number(e.target.value))}>
+                <option value="1">1</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+              </Select>
+            </div>
             <Button onClick={startScraper} disabled={!selectedCity || loading}>
               <Play className="h-4 w-4 mr-2" />
               {loading ? "Başlatılıyor..." : "Başlat"}
             </Button>
-            <Button variant="outline" onClick={fetchRuns}>Yenile</Button>
+            <Button variant="outline" onClick={fetchRuns}>
+              <RefreshCw className="h-4 w-4 mr-2" />Yenile
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -145,6 +203,39 @@ export default function ScraperPage() {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+      {/* Blacklist Kelime Yönetimi */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Emlakçı Filtre Kelimeleri (Blacklist)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Yeni kelime ekle..."
+              value={newKeyword}
+              onChange={(e) => setNewKeyword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addKeyword()}
+              className="max-w-xs"
+            />
+            <Button onClick={addKeyword} disabled={!newKeyword.trim()}>
+              <Plus className="h-4 w-4 mr-2" /> Ekle
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {keywords.map((kw) => (
+              <Badge key={kw.id} variant="secondary" className="px-3 py-1.5 text-sm gap-2">
+                {kw.keyword}
+                <button onClick={() => deleteKeyword(kw.id)} className="hover:text-red-500 transition-colors">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            {keywords.length === 0 && (
+              <span className="text-sm text-[var(--muted-foreground)]">Henüz blacklist kelimesi yok</span>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

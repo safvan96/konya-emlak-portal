@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { TableSkeleton } from "@/components/ui/skeleton";
 
 interface Log {
   id: string;
@@ -23,9 +24,13 @@ const ACTION_LABELS: Record<string, string> = {
   LOGOUT: "Çıkış",
   VIEW_LISTING: "İlan Görüntüleme",
   ASSIGN_LISTINGS: "İlan Atama",
+  REMOVE_ASSIGNMENT: "Atama Kaldırma",
   SCRAPER_TRIGGERED: "Scraper Tetikleme",
   FAVORITE_ADD: "Favorilere Ekleme",
   FAVORITE_REMOVE: "Favorilerden Çıkarma",
+  PASSWORD_CHANGED: "Şifre Değişikliği",
+  CITY_CREATED: "Şehir Ekleme",
+  CITY_UPDATED: "Şehir Güncelleme",
 };
 
 export default function LogsPage() {
@@ -34,6 +39,7 @@ export default function LogsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
   const [filterAction, setFilterAction] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchLogs = useCallback(async (p = 1) => {
     const params = new URLSearchParams({ page: String(p), limit: "50" });
@@ -49,25 +55,33 @@ export default function LogsPage() {
   }, [filterAction]);
 
   useEffect(() => {
-    fetchLogs();
+    setLoading(true);
+    fetchLogs().finally(() => setLoading(false));
   }, [fetchLogs]);
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Kullanıcı Logları</h1>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 items-center flex-wrap">
         <Select value={filterAction} onChange={(e) => setFilterAction(e.target.value)} className="w-48">
           <option value="">Tüm Aksiyonlar</option>
           {Object.entries(ACTION_LABELS).map(([key, label]) => (
             <option key={key} value={key}>{label}</option>
           ))}
         </Select>
+        <a
+          href={`/api/logs/export${filterAction ? `?action=${filterAction}` : ""}`}
+          download
+          className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-3 py-2 text-sm font-medium hover:bg-[var(--accent)] transition-colors"
+        >
+          <Download className="h-4 w-4" /> CSV İndir
+        </a>
       </div>
 
       <Card>
         <CardContent className="p-0">
-          <Table>
+          {loading ? <TableSkeleton rows={8} cols={6} /> : <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Kullanıcı</TableHead>
@@ -103,7 +117,7 @@ export default function LogsPage() {
                 </TableRow>
               )}
             </TableBody>
-          </Table>
+          </Table>}
         </CardContent>
       </Card>
 

@@ -34,6 +34,22 @@ async function main() {
 
   console.log("Admin oluşturuldu:", admin.email);
 
+  // Test müşteri
+  const customerPassword = await bcrypt.hash("musteri123", 12);
+  const customer = await prisma.user.upsert({
+    where: { email: "musteri@emlakportal.com" },
+    update: {},
+    create: {
+      email: "musteri@emlakportal.com",
+      password: customerPassword,
+      name: "Test",
+      surname: "Müşteri",
+      role: "CUSTOMER",
+    },
+  });
+
+  console.log("Test müşteri oluşturuldu:", customer.email);
+
   // Kategoriler
   const categories = [
     { name: "Daire", slug: "daire" },

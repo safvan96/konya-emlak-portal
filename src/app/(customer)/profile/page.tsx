@@ -5,16 +5,20 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
     const res = await fetch("/api/profile/password", {
       method: "POST",
@@ -22,14 +26,33 @@ export default function ProfilePage() {
       body: JSON.stringify({ currentPassword, newPassword }),
     });
 
+    setLoading(false);
+
     if (res.ok) {
       setMessage("Şifre başarıyla değiştirildi");
+      setIsSuccess(true);
       setCurrentPassword("");
       setNewPassword("");
     } else {
       const data = await res.json();
       setMessage(data.error || "Bir hata oluştu");
+      setIsSuccess(false);
     }
+  }
+
+  if (status === "loading") {
+    return (
+      <div className="space-y-6 max-w-lg">
+        <Skeleton className="h-9 w-32" />
+        <Card>
+          <CardHeader><Skeleton className="h-5 w-40" /></CardHeader>
+          <CardContent className="space-y-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -59,7 +82,7 @@ export default function ProfilePage() {
         <CardContent>
           <form onSubmit={handleChangePassword} className="space-y-4">
             {message && (
-              <div className={`p-3 text-sm rounded-md border ${message.includes("başarı") ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-500 border-red-200"}`}>
+              <div className={`p-3 text-sm rounded-md border ${isSuccess ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-500 border-red-200"}`}>
                 {message}
               </div>
             )}
@@ -72,13 +95,15 @@ export default function ProfilePage() {
             />
             <Input
               type="password"
-              placeholder="Yeni şifre"
+              placeholder="Yeni şifre (en az 6 karakter)"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
               minLength={6}
             />
-            <Button type="submit">Şifreyi Değiştir</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Değiştiriliyor..." : "Şifreyi Değiştir"}
+            </Button>
           </form>
         </CardContent>
       </Card>

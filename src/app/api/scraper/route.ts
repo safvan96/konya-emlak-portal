@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { scrapeSahibinden } from "@/lib/scraper/sahibinden";
 import { createLog } from "@/lib/log";
+import { scraperTriggerSchema, validateBody } from "@/lib/validations";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -26,11 +27,11 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { citySlug, listingType = "SALE", maxPages = 3 } = body;
-
-  if (!citySlug) {
-    return NextResponse.json({ error: "Şehir gerekli" }, { status: 400 });
+  const validation = validateBody(scraperTriggerSchema, body);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
+  const { citySlug, listingType, maxPages } = validation.data;
 
   await createLog(
     session.user.id,

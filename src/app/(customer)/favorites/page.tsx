@@ -5,6 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import { Heart, MapPin, Ruler, Home, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { ImageWithFallback } from "@/components/ui/image-fallback";
+import { CardSkeleton } from "@/components/ui/skeleton";
 
 interface FavoriteItem {
   id: string;
@@ -26,9 +29,10 @@ interface FavoriteItem {
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFavorites();
+    fetchFavorites().finally(() => setLoading(false));
   }, []);
 
   async function fetchFavorites() {
@@ -39,6 +43,17 @@ export default function FavoritesPage() {
   async function removeFavorite(listingId: string) {
     await fetch(`/api/favorites?listingId=${listingId}`, { method: "DELETE" });
     setFavorites((prev) => prev.filter((f) => f.listing.id !== listingId));
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Favorilerim</h1>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => <CardSkeleton key={i} />)}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -57,7 +72,7 @@ export default function FavoritesPage() {
             <Card key={fav.id} className="overflow-hidden">
               {fav.listing.imageUrls.length > 0 && (
                 <div className="aspect-video bg-[var(--muted)] relative">
-                  <img src={fav.listing.imageUrls[0]} alt={fav.listing.title} className="w-full h-full object-cover" />
+                  <ImageWithFallback src={fav.listing.imageUrls[0]} alt={fav.listing.title} className="w-full h-full object-cover" fallbackClassName="w-full h-full" />
                   <button
                     onClick={() => removeFavorite(fav.listing.id)}
                     className="absolute top-2 right-2 p-2 bg-white/80 rounded-full hover:bg-white transition"
@@ -70,7 +85,7 @@ export default function FavoritesPage() {
                 </div>
               )}
               <CardContent className="p-4 space-y-2">
-                <h3 className="font-semibold text-sm line-clamp-2">{fav.listing.title}</h3>
+                <Link href={`/my-listings/${fav.listing.id}`} className="font-semibold text-sm line-clamp-2 hover:text-[var(--primary)] hover:underline block">{fav.listing.title}</Link>
                 <p className="text-lg font-bold text-[var(--primary)]">{formatPrice(fav.listing.price)}</p>
                 <div className="flex flex-wrap gap-2 text-xs text-[var(--muted-foreground)]">
                   <span className="flex items-center gap-1">

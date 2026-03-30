@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
-import { Plus, Trash2, Edit, X } from "lucide-react";
+import { Plus, Trash2, Edit, X, Link2 } from "lucide-react";
+import Link from "next/link";
+import { TableSkeleton } from "@/components/ui/skeleton";
 
 interface Customer {
   id: string;
@@ -24,9 +26,10 @@ export default function CustomersPage() {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", surname: "", email: "", password: "" });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCustomers();
+    fetchCustomers().finally(() => setLoading(false));
   }, []);
 
   async function fetchCustomers() {
@@ -78,6 +81,15 @@ export default function CustomersPage() {
     setShowForm(true);
   }
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Müşteri Yönetimi</h1>
+        <Card><CardContent className="p-0"><TableSkeleton rows={5} cols={7} /></CardContent></Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -124,7 +136,11 @@ export default function CustomersPage() {
             <TableBody>
               {customers.map((c) => (
                 <TableRow key={c.id}>
-                  <TableCell className="font-medium">{c.name} {c.surname}</TableCell>
+                  <TableCell>
+                    <Link href={`/customers/${c.id}`} className="font-medium hover:text-[var(--primary)] hover:underline">
+                      {c.name} {c.surname}
+                    </Link>
+                  </TableCell>
                   <TableCell>{c.email}</TableCell>
                   <TableCell>
                     <button onClick={() => toggleActive(c.id, c.isActive)}>
@@ -133,15 +149,22 @@ export default function CustomersPage() {
                       </Badge>
                     </button>
                   </TableCell>
-                  <TableCell><Badge variant="secondary">{c._count.assignments}</Badge></TableCell>
+                  <TableCell>
+                    <Link href={`/assignments?customer=${c.id}`} className="hover:underline">
+                      <Badge variant="secondary">{c._count.assignments}</Badge>
+                    </Link>
+                  </TableCell>
                   <TableCell><Badge variant="secondary">{c._count.favorites}</Badge></TableCell>
                   <TableCell className="text-xs">{formatDate(c.createdAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <button onClick={() => startEdit(c)} className="p-1 hover:bg-[var(--accent)] rounded">
+                      <Link href={`/assignments?customer=${c.id}`} className="p-1 hover:bg-[var(--accent)] rounded" title="Atanmış İlanlar">
+                        <Link2 className="h-4 w-4" />
+                      </Link>
+                      <button onClick={() => startEdit(c)} className="p-1 hover:bg-[var(--accent)] rounded" title="Düzenle">
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button onClick={() => deleteCustomer(c.id)} className="p-1 hover:bg-red-50 rounded text-red-500">
+                      <button onClick={() => deleteCustomer(c.id)} className="p-1 hover:bg-red-50 rounded text-red-500" title="Sil">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>

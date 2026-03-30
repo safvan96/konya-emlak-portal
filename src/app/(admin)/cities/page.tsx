@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import { TableSkeleton } from "@/components/ui/skeleton";
 
 interface City {
   id: string;
@@ -22,9 +23,10 @@ export default function CitiesPage() {
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [cityId, setCityId] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCities();
+    fetchCities().finally(() => setLoading(false));
   }, []);
 
   async function fetchCities() {
@@ -52,6 +54,15 @@ export default function CitiesPage() {
       body: JSON.stringify({ id, isActive: !isActive }),
     });
     fetchCities();
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Şehir Yönetimi</h1>
+        <Card><CardContent className="p-0"><TableSkeleton rows={3} cols={5} /></CardContent></Card>
+      </div>
+    );
   }
 
   return (

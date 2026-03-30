@@ -63,7 +63,22 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
+
+  // Toplu güncelleme: { ids: [...], status: "..." }
+  if (body.ids && Array.isArray(body.ids)) {
+    const result = await prisma.listing.updateMany({
+      where: { id: { in: body.ids } },
+      data: {
+        ...(body.status && { status: body.status }),
+        ...(body.categoryId && { categoryId: body.categoryId }),
+      },
+    });
+    return NextResponse.json({ updated: result.count });
+  }
+
+  // Tekil güncelleme: { id: "...", status: "..." }
   const { id, status: newStatus, categoryId } = body;
+  if (!id) return NextResponse.json({ error: "ID gerekli" }, { status: 400 });
 
   const updated = await prisma.listing.update({
     where: { id },
@@ -84,7 +99,18 @@ export async function DELETE(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
+  const ids = searchParams.get("ids");
 
+  // Toplu silme: ?ids=id1,id2,id3
+  if (ids) {
+    const idList = ids.split(",").filter(Boolean);
+    const result = await prisma.listing.deleteMany({
+      where: { id: { in: idList } },
+    });
+    return NextResponse.json({ deleted: result.count });
+  }
+
+  // Tekil silme
   if (!id) return NextResponse.json({ error: "ID gerekli" }, { status: 400 });
 
   await prisma.listing.delete({ where: { id } });

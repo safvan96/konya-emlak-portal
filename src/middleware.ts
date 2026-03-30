@@ -20,7 +20,13 @@ export default withAuth(
       }
     }
 
-    return NextResponse.next();
+    // IP adresini header olarak ilet (API route'larda loglama için)
+    const response = NextResponse.next();
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      || req.headers.get("x-real-ip")
+      || "unknown";
+    response.headers.set("x-client-ip", ip);
+    return response;
   },
   {
     callbacks: {
@@ -47,5 +53,9 @@ export const config = {
     "/api/scraper/:path*",
     "/api/logs/:path*",
     "/api/cities/:path*",
+    "/api/blacklist/:path*",
+    "/api/dashboard/:path*",
+    "/api/favorites/:path*",
+    "/api/profile/:path*",
   ],
 };

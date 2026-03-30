@@ -3,20 +3,26 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { createLog } from "@/lib/log";
+import { changePasswordSchema, validateBody } from "@/lib/validations";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { currentPassword, newPassword } = await req.json();
-
-  if (!currentPassword || !newPassword) {
-    return NextResponse.json({ error: "Tüm alanlar gerekli" }, { status: 400 });
+  // Rate limiting: 5 deneme / 15 dakika
+  const rl = rateLimit(`password:${session.user.id}`, 5, 15 * 60 * 1000);
+  if (!rl.success) {
+    return NextResponse.json({ error: "Çok fazla deneme. 15 dakika bekleyin." }, { status: 429 });
   }
 
-  if (newPassword.length < 6) {
-    return NextResponse.json({ error: "Şifre en az 6 karakter olmalı" }, { status: 400 });
+  const body = await req.json();
+  const validation = validateBody(changePasswordSchema, body);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
+  const { currentPassword, newPassword } = validation.data;
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (!user) return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
@@ -31,6 +37,8 @@ export async function POST(req: NextRequest) {
     where: { id: session.user.id },
     data: { password: hashedPassword },
   });
+
+  await createLog(session.user.id, "PASSWORD_CHANGED", "Şifre değiştirildi");
 
   return NextResponse.json({ success: true });
 }
