@@ -18,6 +18,9 @@ import {
   ChevronRight,
   StickyNote,
   Save,
+  Share2,
+  Copy,
+  Check,
 } from "lucide-react";
 
 interface Listing {
@@ -50,6 +53,7 @@ export default function ListingDetailPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [note, setNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetch(`/api/listings/${params.id}`)
@@ -105,9 +109,25 @@ export default function ListingDetailPage() {
           <ArrowLeft className="h-4 w-4 mr-2" /> Geri
         </Button>
         <h1 className="text-xl font-bold flex-1 truncate">{listing.title}</h1>
-        <Button variant="ghost" size="sm" onClick={toggleFavorite}>
-          <Heart className={`h-5 w-5 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} />
-        </Button>
+        <div className="flex gap-1">
+          <Button variant="ghost" size="sm" onClick={toggleFavorite}>
+            <Heart className={`h-5 w-5 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => {
+            const url = listing.sourceUrl;
+            const text = `${listing.title} - ${formatPrice(listing.price)}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + "\n" + url)}`, "_blank");
+          }}>
+            <Share2 className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => {
+            navigator.clipboard.writeText(listing.sourceUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          }}>
+            {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+          </Button>
+        </div>
       </div>
 
       {/* Fotoğraf Galerisi */}

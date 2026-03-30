@@ -96,6 +96,15 @@ export async function scrapeSahibinden(
     await page.setUserAgent(randomUserAgent());
     await page.setViewport({ width: 1366, height: 768 });
 
+    // Cookie consent ve popup'lari otomatik kapat
+    page.on("dialog", async (dialog) => { await dialog.dismiss(); });
+    await page.evaluateOnNewDocument(() => {
+      // Cookie consent banner'i gizle
+      const style = document.createElement("style");
+      style.textContent = "#onetrust-consent-sdk, .cookie-consent, [class*='cookie'], [id*='cookie'] { display: none !important; }";
+      document.head.appendChild(style);
+    });
+
     // sahibinden.com ilan listesi URL'si - şehir slug'ı dinamik
     const typeSlug = listingType === "SALE" ? "satilik" : "kiralik";
     const baseUrl = `https://www.sahibinden.com/${typeSlug}-${city.slug}`;
@@ -156,6 +165,23 @@ export async function scrapeSahibinden(
               listing.description,
               listing.sellerName ?? undefined
             );
+
+            // Benzer ilan tespiti (aynı başlık + fiyat = muhtemelen aynı ilan farklı ID)
+            if (listing.title && listing.price) {
+              const similar = await prisma.listing.findFirst({
+                where: {
+                  title: listing.title,
+                  price: listing.price,
+                  cityId: city.id,
+                  sahibindenId: { not: listing.sahibindenId },
+                },
+              });
+              if (similar) {
+                console.log(`Benzer ilan atlandı: ${listing.title} (mevcut: ${similar.sahibindenId})`);
+                result.duplicates++;
+                continue;
+              }
+            }
 
             // Kategori tahmin
             const categoryId = await guessCategory(listing.title);

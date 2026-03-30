@@ -27,6 +27,7 @@ export default function CustomersPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", surname: "", email: "", password: "" });
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchCustomers().finally(() => setLoading(false));
@@ -75,6 +76,40 @@ export default function CustomersPage() {
     fetchCustomers();
   }
 
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  async function bulkToggleActive(isActive: boolean) {
+    if (selected.size === 0) return;
+    await Promise.all(
+      Array.from(selected).map((id) =>
+        fetch("/api/customers", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, isActive }),
+        })
+      )
+    );
+    setSelected(new Set());
+    fetchCustomers();
+  }
+
+  async function bulkDeleteCustomers() {
+    if (!confirm(`${selected.size} musteriyi silmek istediginize emin misiniz?`)) return;
+    await Promise.all(
+      Array.from(selected).map((id) =>
+        fetch(`/api/customers?id=${id}`, { method: "DELETE" })
+      )
+    );
+    setSelected(new Set());
+    fetchCustomers();
+  }
+
   function startEdit(customer: Customer) {
     setEditId(customer.id);
     setForm({ name: customer.name, surname: customer.surname, email: customer.email, password: "" });
@@ -100,6 +135,18 @@ export default function CustomersPage() {
         </Button>
       </div>
 
+      {selected.size > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3">
+          <span className="text-sm font-medium">{selected.size} musteri secildi</span>
+          <div className="flex gap-2 ml-auto">
+            <Button size="sm" variant="outline" onClick={() => bulkToggleActive(true)}>Aktif Yap</Button>
+            <Button size="sm" variant="outline" onClick={() => bulkToggleActive(false)}>Pasif Yap</Button>
+            <Button size="sm" variant="destructive" onClick={bulkDeleteCustomers}>Sil</Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>Iptal</Button>
+          </div>
+        </div>
+      )}
+
       {showForm && (
         <Card>
           <CardHeader>
@@ -124,6 +171,13 @@ export default function CustomersPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10">
+                  <input type="checkbox"
+                    checked={customers.length > 0 && selected.size === customers.length}
+                    onChange={() => selected.size === customers.length ? setSelected(new Set()) : setSelected(new Set(customers.map((c) => c.id)))}
+                    className="rounded"
+                  />
+                </TableHead>
                 <TableHead>Ad Soyad</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Durum</TableHead>
@@ -135,7 +189,10 @@ export default function CustomersPage() {
             </TableHeader>
             <TableBody>
               {customers.map((c) => (
-                <TableRow key={c.id}>
+                <TableRow key={c.id} className={selected.has(c.id) ? "bg-[var(--primary)]/5" : ""}>
+                  <TableCell>
+                    <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggleSelect(c.id)} className="rounded" />
+                  </TableCell>
                   <TableCell>
                     <Link href={`/customers/${c.id}`} className="font-medium hover:text-[var(--primary)] hover:underline">
                       {c.name} {c.surname}
@@ -173,7 +230,7 @@ export default function CustomersPage() {
               ))}
               {customers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-[var(--muted-foreground)]">
+                  <TableCell colSpan={8} className="text-center py-8 text-[var(--muted-foreground)]">
                     Henüz müşteri yok
                   </TableCell>
                 </TableRow>
