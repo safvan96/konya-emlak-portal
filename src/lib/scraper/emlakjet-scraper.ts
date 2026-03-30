@@ -69,6 +69,15 @@ function parseDetailPage(html: string, url: string): EmlakjetListing | null {
     let title = titleMatch ? titleMatch[1].replace(/\s*\|.*$/, "").replace(/\s*#\d+$/, "").trim() : "";
     // Emlakjet prefix'ini kaldır
     title = title.replace(/^Emlakjet\s*-?\s*/i, "").trim();
+    // Başlığı temizle: satıcı adı + fiyat kaldır
+    title = title.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    title = title.replace(/\s+[\d,.]+\s*TL\s*$/i, ""); // Sondaki fiyat
+    const konyaIdx = title.indexOf("Konya");
+    if (konyaIdx > 0) title = title.substring(konyaIdx);
+    title = title.replace(/^Konya\s+/, ""); // "Konya " prefix
+    title = title.replace(/\s+Oda\s+/g, " ");
+    title = title.replace(/Mahallesi/g, "Mah.");
+    title = title.replace(/\s+/g, " ").trim();
 
     // Açıklama
     const description = fields.description || "";
