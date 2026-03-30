@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Users, Link2, Bot, Heart, CalendarCheck } from "lucide-react";
+import { Building2, Users, Link2, Bot, Heart, CalendarCheck, TrendingDown, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatPrice } from "@/lib/utils";
 
 interface Stats {
   totalListings: number;
@@ -17,6 +19,8 @@ interface Stats {
   totalFavorites: number;
   lastScrape: { startedAt: string; status: string; accepted: number; rejected: number } | null;
   recentLogs: { id: string; action: string; details: string | null; createdAt: string; user: { name: string; surname: string } }[];
+  newListingsSinceLogin: number;
+  priceDrops: Array<{ oldPrice: number; newPrice: number; changedAt: string; listing: { id: string; title: string; city: { name: string } } }>;
 }
 
 const ACTION_LABELS: Record<string, string> = {
@@ -121,6 +125,45 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Bildirimler */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {stats.newListingsSinceLogin > 0 && (
+          <Card className="border-green-200 bg-green-50/50">
+            <CardContent className="p-4 flex items-center gap-3">
+              <Sparkles className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="font-medium text-green-800">
+                  Son girisimden beri <span className="text-lg">{stats.newListingsSinceLogin}</span> yeni ilan eklendi
+                </p>
+                <Link href="/listings" className="text-xs text-green-600 hover:underline">Ilanlari gor →</Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {stats.priceDrops.length > 0 && (
+          <Card className="border-orange-200 bg-orange-50/50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingDown className="h-5 w-5 text-orange-600" />
+                <span className="font-medium text-orange-800">Fiyat Dususleri (Son 7 Gun)</span>
+              </div>
+              <div className="space-y-1">
+                {stats.priceDrops.slice(0, 5).map((p, i) => (
+                  <Link key={i} href={`/listings/${p.listing.id}`} className="flex items-center justify-between text-sm hover:bg-orange-100 rounded px-1 py-0.5">
+                    <span className="truncate max-w-[200px]">{p.listing.title}</span>
+                    <span className="shrink-0 ml-2">
+                      <span className="text-red-500 line-through text-xs">{formatPrice(p.oldPrice)}</span>
+                      <span className="text-green-600 font-medium ml-1 text-xs">{formatPrice(p.newPrice)}</span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Card>

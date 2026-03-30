@@ -31,6 +31,8 @@ export function proxyImageUrl(url: string): string {
 
 export function slugify(text: string): string {
   return text
+    .replace(/İ/g, "i")
+    .replace(/I/g, "i")
     .toLowerCase()
     .replace(/ğ/g, "g")
     .replace(/ü/g, "u")

@@ -12,6 +12,15 @@ export async function GET() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Admin'in son login zamani
+  const lastLogin = await prisma.userLog.findFirst({
+    where: { userId: session.user.id, action: "LOGIN" },
+    orderBy: { createdAt: "desc" },
+    skip: 1, // Mevcut oturumu atla
+  });
+
+  const sinceLastLogin = lastLogin?.createdAt || today;
+
   const [
     totalListings,
     ownerListings,
@@ -23,6 +32,8 @@ export async function GET() {
     totalFavorites,
     lastScrape,
     recentLogs,
+    newListingsSinceLogin,
+    priceDrops,
   ] = await Promise.all([
     prisma.listing.count(),
     prisma.listing.count({ where: { isFromOwner: true } }),
@@ -38,6 +49,21 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
       take: 10,
     }),
+    // Son giristen beri yeni ilanlar
+    prisma.listing.count({
+      where: { createdAt: { gte: sinceLastLogin }, isFromOwner: true },
+    }),
+    // Son 7 gundeki fiyat dususleri
+    prisma.priceHistory.findMany({
+      where: {
+        changedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      },
+      include: {
+        listing: { select: { id: true, title: true, city: { select: { name: true } } } },
+      },
+      orderBy: { changedAt: "desc" },
+      take: 10,
+    }),
   ]);
 
   return NextResponse.json({
@@ -51,5 +77,7 @@ export async function GET() {
     totalFavorites,
     lastScrape,
     recentLogs,
+    newListingsSinceLogin,
+    priceDrops: priceDrops.filter((p) => p.newPrice !== null && p.oldPrice !== null && p.newPrice < p.oldPrice),
   });
 }
