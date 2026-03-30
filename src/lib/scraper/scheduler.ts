@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { scrapeSahibinden } from "./sahibinden";
+import { smartScrape } from "./sahibinden";
 import { prisma } from "../prisma";
 import { autoAssignListings } from "../auto-assign";
 
@@ -32,7 +32,7 @@ export async function runScraperForAllCities() {
 
       try {
         // Satılık
-        const saleResult = await scrapeSahibinden(city.slug, "SALE", 3);
+        const saleResult = await smartScrape(city.slug, "SALE", 3);
         console.log(`${city.name} satılık sonuç:`, saleResult);
       } catch (err) {
         console.error(`${city.name} satılık hata:`, err);
@@ -40,7 +40,7 @@ export async function runScraperForAllCities() {
 
       try {
         // Kiralık
-        const rentResult = await scrapeSahibinden(city.slug, "RENT", 3);
+        const rentResult = await smartScrape(city.slug, "RENT", 3);
         console.log(`${city.name} kiralık sonuç:`, rentResult);
       } catch (err) {
         console.error(`${city.name} kiralık hata:`, err);

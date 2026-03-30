@@ -3,10 +3,11 @@ import { prisma } from "../prisma";
 import { filterListing } from "./filter";
 
 const USER_AGENTS = [
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
-  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
 ];
 
 function randomUserAgent(): string {
@@ -81,22 +82,72 @@ export async function scrapeSahibinden(
 
   let browser: Browser | null = null;
 
+  // Proxy ayarları
+  const proxyUrl = process.env.PROXY_URL; // örn: http://user:pass@host:port
+  const proxyHost = process.env.PROXY_HOST;
+  const proxyPort = process.env.PROXY_PORT;
+  const proxyUser = process.env.PROXY_USER;
+  const proxyPass = process.env.PROXY_PASS;
+
+  const hasProxy = proxyUrl || (proxyHost && proxyPort);
+
   try {
+    const launchArgs = [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-web-security",
+      "--disable-features=IsolateOrigins,site-per-process",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--disable-blink-features=AutomationControlled",
+    ];
+
+    // Proxy varsa Puppeteer'a ekle
+    if (proxyUrl) {
+      const parsed = new URL(proxyUrl);
+      launchArgs.push(`--proxy-server=${parsed.hostname}:${parsed.port}`);
+    } else if (proxyHost && proxyPort) {
+      launchArgs.push(`--proxy-server=${proxyHost}:${proxyPort}`);
+    }
+
     browser = await puppeteer.launch({
       headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-web-security",
-        "--disable-features=IsolateOrigins,site-per-process",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-      ],
+      args: launchArgs,
     });
 
     const page = await browser.newPage();
+
+    // Proxy auth
+    if (proxyUrl) {
+      const parsed = new URL(proxyUrl);
+      if (parsed.username && parsed.password) {
+        await page.authenticate({ username: decodeURIComponent(parsed.username), password: decodeURIComponent(parsed.password) });
+      }
+    } else if (proxyUser && proxyPass) {
+      await page.authenticate({ username: proxyUser, password: proxyPass });
+    }
+
     await page.setUserAgent(randomUserAgent());
     await page.setViewport({ width: 1366, height: 768 });
+
+    // Anti-detection
+    await page.evaluateOnNewDocument(() => {
+      Object.defineProperty(navigator, 'webdriver', { get: () => false });
+      Object.defineProperty(navigator, 'languages', { get: () => ['tr-TR', 'tr', 'en-US', 'en'] });
+      Object.defineProperty(navigator, 'platform', { get: () => 'Win32' });
+      // @ts-ignore
+      window.chrome = { runtime: {}, loadTimes: () => {}, csi: () => {} };
+    });
+
+    // Gerçekçi HTTP headers
+    await page.setExtraHTTPHeaders({
+      'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+      'Sec-Ch-Ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+      'Sec-Ch-Ua-Mobile': '?0',
+      'Sec-Ch-Ua-Platform': '"Windows"',
+      'Upgrade-Insecure-Requests': '1',
+    });
 
     // Cookie consent ve popup'lari otomatik kapat
     page.on("dialog", async (dialog) => { await dialog.dismiss(); });
@@ -106,15 +157,20 @@ export async function scrapeSahibinden(
       document.head.appendChild(style);
     });
 
+    console.log(`Proxy: ${hasProxy ? "AKTIF" : "YOK (direkt bağlantı)"}`);
+
     // Sahibinden login gerekiyorsa cookie ile giris yap
     const sbEmail = process.env.SAHIBINDEN_EMAIL;
     const sbPassword = process.env.SAHIBINDEN_PASSWORD;
     if (sbEmail && sbPassword) {
       try {
         console.log("Sahibinden login yapiliyor...");
-        await page.goto("https://secure.sahibinden.com/login", { waitUntil: "networkidle2", timeout: 30000 });
-        await page.type('input[name="username"], input[type="email"]', sbEmail, { delay: 50 });
-        await page.type('input[name="password"], input[type="password"]', sbPassword, { delay: 50 });
+        await page.goto("https://secure.sahibinden.com/giris", { waitUntil: "networkidle2", timeout: 30000 });
+        await randomDelay();
+        await page.type('input[name="username"], input[type="email"]', sbEmail, { delay: 80 + Math.random() * 40 });
+        await randomDelay();
+        await page.type('input[name="password"], input[type="password"]', sbPassword, { delay: 80 + Math.random() * 40 });
+        await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000));
         await page.click('button[type="submit"], #loginSubmit');
         await page.waitForNavigation({ waitUntil: "networkidle2", timeout: 15000 }).catch(() => {});
         console.log("Login tamamlandi, URL:", page.url());
@@ -137,10 +193,16 @@ export async function scrapeSahibinden(
         console.log(`Sayfa taraniyor: ${url}`);
         await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
 
-        // Login redirect kontrolu
-        if (page.url().includes("login") || page.url().includes("secure.sahibinden")) {
-          console.error("Sahibinden login gerektiriyor! SAHIBINDEN_EMAIL/PASSWORD env ayarlayin.");
-          throw new Error("Sahibinden login gerekli - VPS IP engellenmiş olabilir");
+        // Login redirect veya captcha kontrolu
+        const currentUrl = page.url();
+        const pageTitle = await page.title();
+        if (currentUrl.includes("login") || currentUrl.includes("secure.sahibinden") || currentUrl.includes("giris")) {
+          console.error("Sahibinden login gerektiriyor! SAHIBINDEN_EMAIL/PASSWORD env ayarlayin veya PROXY_URL tanimlayın.");
+          throw new Error("Sahibinden login gerekli - VPS IP engellenmiş olabilir. Residential proxy kullanın.");
+        }
+        if (pageTitle.includes("Olağan dışı") || pageTitle.includes("erişim tespit")) {
+          console.error("Sahibinden captcha/bot tespiti! Residential proxy gerekli.");
+          throw new Error("Sahibinden bot tespiti - Residential proxy kullanın (PROXY_URL env).");
         }
 
         await randomDelay();
@@ -437,4 +499,37 @@ async function guessCategory(title: string): Promise<string | null> {
     where: { slug: "daire" },
   });
   return daire?.id || null;
+}
+
+/**
+ * Akıllı scraper - ortama göre otomatik mod seçer:
+ * 1. SCRAPER_API_KEY veya ZENROWS_API_KEY varsa → HTTP mod (en güvenilir)
+ * 2. PROXY_URL varsa → Puppeteer proxy mod
+ * 3. SCRAPER_MODE=search → DuckDuckGo arama motoru modu (API key gerektirmez)
+ * 4. Varsayılan → Puppeteer direkt mod (sadece ev/residential IP'sinde çalışır)
+ */
+export async function smartScrape(
+  citySlug: string,
+  listingType: "SALE" | "RENT" = "SALE",
+  maxPages: number = 3
+): Promise<ScrapeResult> {
+  const mode = process.env.SCRAPER_MODE;
+
+  // ScraperAPI veya Zenrows varsa HTTP modunu kullan
+  if (process.env.SCRAPER_API_KEY || process.env.ZENROWS_API_KEY) {
+    console.log("=== HTTP Scraper modu (API key) ===");
+    const { scrapeWithHttp } = await import("./http-scraper");
+    return scrapeWithHttp(citySlug, listingType, maxPages);
+  }
+
+  // Emlakjet modu - API key gerektirmez, VPS'den direkt çalışır
+  if (mode === "emlakjet" || (!process.env.PROXY_URL && !process.env.SAHIBINDEN_EMAIL)) {
+    console.log("=== Emlakjet Scraper modu (API key gerektirmez) ===");
+    const { scrapeEmlakjet } = await import("./emlakjet-scraper");
+    return scrapeEmlakjet(citySlug, listingType, maxPages);
+  }
+
+  // Puppeteer ile dene
+  console.log("=== Puppeteer Scraper modu ===");
+  return scrapeSahibinden(citySlug, listingType, maxPages);
 }
