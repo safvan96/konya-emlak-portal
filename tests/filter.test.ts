@@ -18,6 +18,13 @@ function countPhoneNumbers(text: string): number {
   return (text.match(pattern) || []).length;
 }
 
+function checkTitleForAgent(title: string): boolean {
+  const lower = title.toLowerCase();
+  if (/\bsahibinden\b/i.test(lower)) return false;
+  const patterns = [/\bemlak\b/i, /\bgayrimenkul\b/i, /\bremax\b/i, /\brealty\s*world\b/i, /\bcentury\s*21\b/i, /\bcoldwell\b/i, /\bturyap\b/i];
+  return patterns.some(p => p.test(lower));
+}
+
 function hasExternalUrl(text: string): boolean {
   const pattern = /(?:www\.|https?:\/\/)[\w.-]+\.(?:com|net|org|com\.tr)/gi;
   const urls = text.match(pattern) || [];
@@ -79,6 +86,32 @@ describe("Phone number detection", () => {
   it("detects numbers with different separators", () => {
     const text = "0532-123-45-67 ve 0542.987.65.43";
     expect(countPhoneNumbers(text)).toBe(2);
+  });
+});
+
+describe("Title agent detection", () => {
+  it("detects emlak in title", () => {
+    expect(checkTitleForAgent("Kule 42 Emlak Konya Selçuklu Satılık Daire")).toBe(true);
+  });
+
+  it("detects gayrimenkul in title", () => {
+    expect(checkTitleForAgent("Erkan Başar Gayrimenkul Konya Meram 3+1 Daire")).toBe(true);
+  });
+
+  it("detects realty world in title", () => {
+    expect(checkTitleForAgent("Realty World Vega Konya Ereğli Satılık Tarla")).toBe(true);
+  });
+
+  it("allows sahibinden in title", () => {
+    expect(checkTitleForAgent("Sahibinden Konya Meram 2+1 Satılık Daire")).toBe(false);
+  });
+
+  it("allows clean owner titles", () => {
+    expect(checkTitleForAgent("Selçuklu Bosna Hersek 3+1 Satılık Daire")).toBe(false);
+  });
+
+  it("allows title with only district and room info", () => {
+    expect(checkTitleForAgent("Meram Yaka Mah. 4+1 Satılık Dublex")).toBe(false);
   });
 });
 
