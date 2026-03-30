@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatPrice, formatDate } from "@/lib/utils";
 import { Trash2, Plus, Search } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/toast";
 
 interface Customer {
   id: string;
@@ -51,6 +52,7 @@ export default function AssignmentsPage() {
 
 function AssignmentsContent() {
   const searchParams = useSearchParams();
+  const { toast } = useToast();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -90,11 +92,18 @@ function AssignmentsContent() {
   async function assignListings() {
     if (!selectedCustomer || selectedListings.length === 0) return;
 
-    await fetch("/api/assignments", {
+    const res = await fetch("/api/assignments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: selectedCustomer, listingIds: selectedListings }),
     });
+
+    if (res.ok) {
+      const data = await res.json();
+      toast(`${data.assigned} ilan atandi`, "success");
+    } else {
+      toast("Atama hatasi", "error");
+    }
 
     setSelectedListings([]);
     setShowAssignForm(false);
@@ -103,6 +112,7 @@ function AssignmentsContent() {
 
   async function removeAssignment(id: string) {
     await fetch(`/api/assignments?id=${id}`, { method: "DELETE" });
+    toast("Atama kaldirildi", "info");
     fetchAssignments();
   }
 

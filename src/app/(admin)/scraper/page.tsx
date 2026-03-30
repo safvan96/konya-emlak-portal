@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatDate } from "@/lib/utils";
 import { Play, Plus, X, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 
 interface City {
   id: string;
@@ -38,6 +39,7 @@ interface BlacklistKeyword {
 }
 
 export default function ScraperPage() {
+  const { toast } = useToast();
   const [cities, setCities] = useState<City[]>([]);
   const [runs, setRuns] = useState<ScraperRun[]>([]);
   const [selectedCity, setSelectedCity] = useState("");
@@ -68,11 +70,16 @@ export default function ScraperPage() {
     if (res.ok) {
       setNewKeyword("");
       fetchKeywords();
+      toast("Kelime eklendi", "success");
+    } else {
+      const d = await res.json();
+      toast(d.error || "Hata", "error");
     }
   }
 
   async function deleteKeyword(id: string) {
     await fetch(`/api/blacklist?id=${id}`, { method: "DELETE" });
+    toast("Kelime silindi", "info");
     fetchKeywords();
   }
 
@@ -90,6 +97,7 @@ export default function ScraperPage() {
       body: JSON.stringify({ citySlug: selectedCity, listingType, maxPages }),
     });
     setLoading(false);
+    toast("Scraping baslatildi", "success");
     fetchRuns();
     // Çalışıyorken her 10 saniyede bir otomatik yenile
     const interval = setInterval(async () => {

@@ -6,7 +6,7 @@
 - [x] PostgreSQL + Prisma kurulumu
 - [x] Docker Compose (PostgreSQL + App)
 - [x] Environment variables (.env.example)
-- [ ] ESLint + Prettier konfigürasyonu
+- [x] Klavye kısayolları (admin + müşteri)
 
 ## Faz 1: Veritabanı ve Auth ✅
 - [x] Prisma schema tasarımı (users, listings, categories, assignments, user_logs, favorites)

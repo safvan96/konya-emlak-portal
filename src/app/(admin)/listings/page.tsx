@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatPrice, formatDate } from "@/lib/utils";
 import { ExternalLink, Trash2, ChevronLeft, ChevronRight, Eye, Download, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/toast";
 
 interface Listing {
   id: string;
@@ -39,6 +40,7 @@ interface Pagination {
 export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 20, total: 0, totalPages: 0 });
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [filterOwner, setFilterOwner] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -71,6 +73,7 @@ export default function ListingsPage() {
   async function deleteListing(id: string) {
     if (!confirm("Bu ilanı silmek istediğinize emin misiniz?")) return;
     await fetch(`/api/listings?id=${id}`, { method: "DELETE" });
+    toast("Ilan silindi", "info");
     fetchListings(pagination.page);
   }
 
@@ -108,14 +111,16 @@ export default function ListingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids: Array.from(selected), status }),
     });
+    toast(`${selected.size} ilan guncellendi`, "success");
     fetchListings(pagination.page);
   }
 
   async function bulkDelete() {
     if (selected.size === 0) return;
-    if (!confirm(`${selected.size} ilanı silmek istediğinize emin misiniz?`)) return;
+    if (!confirm(`${selected.size} ilani silmek istediginize emin misiniz?`)) return;
 
     await fetch(`/api/listings?ids=${Array.from(selected).join(",")}`, { method: "DELETE" });
+    toast(`${selected.size} ilan silindi`, "info");
     fetchListings(pagination.page);
   }
 
@@ -129,11 +134,15 @@ export default function ListingsPage() {
 
   async function doBulkAssign() {
     if (!bulkAssignTarget || selected.size === 0) return;
-    await fetch("/api/assignments", {
+    const res = await fetch("/api/assignments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: bulkAssignTarget, listingIds: Array.from(selected) }),
     });
+    if (res.ok) {
+      const d = await res.json();
+      toast(`${d.assigned} ilan atandi`, "success");
+    }
     setShowBulkAssign(false);
     setBulkAssignTarget("");
     setSelected(new Set());
