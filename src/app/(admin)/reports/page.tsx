@@ -7,7 +7,7 @@ import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Building2, Users, Link2, Heart, Eye, LogIn, Bot, TrendingDown,
-  FileText, Trophy,
+  FileText, Trophy, Download,
 } from "lucide-react";
 
 interface Report {
@@ -56,13 +56,21 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-3xl font-bold">Raporlar</h1>
-        <Select value={period} onChange={(e) => setPeriod(e.target.value)} className="w-44">
-          <option value="week">Son 7 Gun</option>
-          <option value="month">Son 30 Gun</option>
-          <option value="all">Tum Zamanlar</option>
-        </Select>
+        <div className="flex items-center gap-2">
+          <a href="/api/reports/export?type=customers" download className="inline-flex items-center gap-1 rounded-md border border-[var(--border)] px-3 py-2 text-xs hover:bg-[var(--accent)]">
+            <Download className="h-3 w-3" /> Musteri Raporu
+          </a>
+          <a href="/api/reports/export?type=listings" download className="inline-flex items-center gap-1 rounded-md border border-[var(--border)] px-3 py-2 text-xs hover:bg-[var(--accent)]">
+            <Download className="h-3 w-3" /> Ilan Raporu
+          </a>
+          <Select value={period} onChange={(e) => setPeriod(e.target.value)} className="w-44">
+            <option value="week">Son 7 Gun</option>
+            <option value="month">Son 30 Gun</option>
+            <option value="all">Tum Zamanlar</option>
+          </Select>
+        </div>
       </div>
 
       <h2 className="text-lg font-semibold text-[var(--muted-foreground)]">{periodLabel}</h2>

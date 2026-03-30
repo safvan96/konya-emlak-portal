@@ -65,24 +65,32 @@ ofisimiz, şubemiz, mağazamız, profesyonel ekibimiz
 konya-emlak-portal/
 ├── src/
 │   ├── app/                    # Next.js App Router
-│   │   ├── (auth)/             # Login/Register sayfaları
-│   │   ├── (admin)/            # Admin panel sayfaları
+│   │   ├── (auth)/             # Login
+│   │   ├── (admin)/            # Admin panel (13 sayfa)
 │   │   │   ├── dashboard/
-│   │   │   ├── listings/
-│   │   │   ├── customers/
+│   │   │   ├── listings/ + [id]/ + map/
+│   │   │   ├── customers/ + [id]/
 │   │   │   ├── assignments/
-│   │   │   └── logs/
-│   │   ├── (customer)/         # Müşteri panel sayfaları
-│   │   │   ├── my-listings/
-│   │   │   ├── favorites/
-│   │   │   └── profile/
-│   │   ├── api/                # API Routes
-│   │   │   ├── auth/
-│   │   │   ├── listings/
-│   │   │   ├── customers/
-│   │   │   ├── assignments/
+│   │   │   ├── logs/
+│   │   │   ├── analytics/
+│   │   │   ├── reports/
 │   │   │   ├── scraper/
-│   │   │   └── logs/
+│   │   │   ├── cities/
+│   │   │   └── settings/
+│   │   ├── (customer)/         # Müşteri panel (7 sayfa)
+│   │   │   ├── my-listings/ + [id]/
+│   │   │   ├── favorites/
+│   │   │   ├── compare/
+│   │   │   ├── notifications/
+│   │   │   ├── preferences/
+│   │   │   └── profile/
+│   │   ├── api/                # 28+ API endpoint
+│   │   │   ├── auth/, listings/, customers/, assignments/
+│   │   │   ├── favorites/, notes/, preferences/, notifications/
+│   │   │   ├── scraper/, blacklist/, cities/
+│   │   │   ├── analytics/, reports/, dashboard/, health/
+│   │   │   ├── logs/, sessions/, images/
+│   │   │   └── mobile/
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components/
