@@ -15,16 +15,20 @@ function cleanTitle(title: string): string {
   // Sondaki fiyatı kaldır: "... 6,000,000 TL" veya "... 800,000 TL"
   clean = clean.replace(/\s+[\d,.]+\s*TL\s*$/i, "");
 
-  // "Konya" kelimesinden önceki satıcı adını kaldır
-  // Pattern: "Satıcı Adı Konya İlçe ..." → "Konya İlçe ..."
-  const konyaIdx = clean.indexOf("Konya");
-  if (konyaIdx > 0) {
-    clean = clean.substring(konyaIdx);
+  // Şehir adından önceki satıcı adını kaldır (tüm şehirler)
+  const cities = ["Konya", "Ankara", "İstanbul", "İzmir", "Bursa", "Antalya", "Adana", "Gaziantep", "Kayseri", "Mersin"];
+  for (const city of cities) {
+    const cityIdx = clean.indexOf(city);
+    if (cityIdx > 0) {
+      clean = clean.substring(cityIdx);
+      break;
+    }
   }
 
-  // "Konya" dan sonra şehir adını da kaldır, sadece ilçe+mahalle+detay bırak
-  // "Konya Selçuklu Buhara Mahallesi 3+1 Oda Satılık Daire" → "Selçuklu Buhara Mah. 3+1 Satılık Daire"
-  clean = clean.replace(/^Konya\s+/, "");
+  // Şehir adını kaldır, sadece ilçe+mahalle+detay bırak
+  for (const city of cities) {
+    clean = clean.replace(new RegExp(`^${city}\\s+`), "");
+  }
 
   // "Oda" kelimesini kaldır (gereksiz)
   clean = clean.replace(/\s+Oda\s+/g, " ");

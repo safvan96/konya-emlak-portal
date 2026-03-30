@@ -72,9 +72,14 @@ function parseDetailPage(html: string, url: string): EmlakjetListing | null {
     // Başlığı temizle: satıcı adı + fiyat kaldır
     title = title.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     title = title.replace(/\s+[\d,.]+\s*TL\s*$/i, ""); // Sondaki fiyat
-    const konyaIdx = title.indexOf("Konya");
-    if (konyaIdx > 0) title = title.substring(konyaIdx);
-    title = title.replace(/^Konya\s+/, ""); // "Konya " prefix
+    const cityNames = ["Konya", "Ankara", "İstanbul", "İzmir", "Bursa", "Antalya", "Adana", "Gaziantep", "Kayseri", "Mersin"];
+    for (const cn of cityNames) {
+      const idx = title.indexOf(cn);
+      if (idx > 0) { title = title.substring(idx); break; }
+    }
+    for (const cn of cityNames) {
+      title = title.replace(new RegExp(`^${cn}\\s+`), "");
+    }
     title = title.replace(/\s+Oda\s+/g, " ");
     title = title.replace(/Mahallesi/g, "Mah.");
     title = title.replace(/\s+/g, " ").trim();
