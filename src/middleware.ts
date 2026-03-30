@@ -14,7 +14,7 @@ export default withAuth(
     }
 
     // Customer routes
-    if (path.startsWith("/my-listings") || path.startsWith("/favorites") || path.startsWith("/profile") || path.startsWith("/preferences") || path.startsWith("/compare") || path.startsWith("/notifications")) {
+    if (path.startsWith("/my-listings") || path.startsWith("/favorites") || path.startsWith("/profile") || path.startsWith("/preferences") || path.startsWith("/compare") || path.startsWith("/notifications") || path.startsWith("/history")) {
       if (token?.role === "ADMIN") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
@@ -66,6 +66,10 @@ export const config = {
     "/preferences/:path*",
     "/compare/:path*",
     "/notifications/:path*",
+    "/history/:path*",
+    "/api/history/:path*",
+    "/history/:path*",
+    "/api/history/:path*",
     "/api/notifications/:path*",
     "/api/analytics/:path*",
     "/api/sessions/:path*",
