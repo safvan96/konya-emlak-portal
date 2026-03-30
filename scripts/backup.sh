@@ -4,7 +4,7 @@
 
 set -e
 
-BACKUP_DIR="/var/backups/emlak-portal"
+BACKUP_DIR="$HOME/backups/emlak-portal"
 DB_NAME="konya_emlak"
 DB_USER="postgres"
 RETENTION_DAYS=30

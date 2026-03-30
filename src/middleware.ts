@@ -76,7 +76,7 @@ export const config = {
     "/api/notifications/:path*",
     "/api/analytics/:path*",
     "/api/sessions/:path*",
-    "/api/images/:path*",
+    // "/api/images/:path*", // Public - resim proxy auth gerektirmez
     "/api/reports/:path*",
     "/api/history/:path*",
     "/api/mobile/:path*",

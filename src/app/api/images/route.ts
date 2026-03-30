@@ -4,15 +4,18 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams.get("url");
 
-  if (!url || !url.includes("sahibinden.com")) {
+  const allowedDomains = ["sahibinden.com", "emlakjet.com", "imaj.emlakjet.com"];
+  if (!url || !allowedDomains.some(d => url.includes(d))) {
     return NextResponse.json({ error: "Geçersiz URL" }, { status: 400 });
   }
+
+  const referer = url.includes("emlakjet") ? "https://www.emlakjet.com/" : "https://www.sahibinden.com/";
 
   try {
     const response = await fetch(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "https://www.sahibinden.com/",
+        "Referer": referer,
       },
     });
 
