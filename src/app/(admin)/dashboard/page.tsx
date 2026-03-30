@@ -34,7 +34,10 @@ const ACTION_LABELS: Record<string, string> = {
   FAVORITE_REMOVE: "Favorilerden Çıkarma",
   PASSWORD_CHANGED: "Şifre Değişikliği",
   CITY_CREATED: "Şehir Ekleme",
-  CITY_UPDATED: "Şehir Güncelleme",
+  CITY_UPDATED: "Sehir Guncelleme",
+  ADMIN_NOTIFICATION: "Admin Bildirimi",
+  SEND_NOTIFICATION: "Bildirim Gonderme",
+  FORCE_DEACTIVATE: "Zorla Deaktif",
 };
 
 export default function DashboardPage() {

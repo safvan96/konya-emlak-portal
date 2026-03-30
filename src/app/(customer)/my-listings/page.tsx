@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
-import { Heart, MapPin, Ruler, Home, ExternalLink } from "lucide-react";
+import { Heart, MapPin, Ruler, Home, ExternalLink, Building2 } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { ImageWithFallback } from "@/components/ui/image-fallback";
@@ -177,8 +177,9 @@ export default function MyListingsPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((a) => (
             <Card key={a.id} className={`overflow-hidden ${compareIds.has(a.listing.id) ? "ring-2 ring-[var(--primary)]" : ""}`}>
-              {a.listing.imageUrls.length > 0 && (
-                <div className="aspect-video bg-[var(--muted)] relative">
+              <div className="aspect-video bg-[var(--muted)] relative">
+                {a.listing.imageUrls.length > 0 ? (
+                  <>
                   <button
                     onClick={() => setCompareIds((prev) => {
                       const next = new Set(prev);
@@ -208,8 +209,13 @@ export default function MyListingsPage() {
                   <Badge className="absolute top-2 left-2" variant={a.listing.listingType === "SALE" ? "default" : "secondary"}>
                     {a.listing.listingType === "SALE" ? "Satılık" : "Kiralık"}
                   </Badge>
-                </div>
-              )}
+                  </>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Building2 className="h-10 w-10 text-[var(--muted-foreground)]" />
+                  </div>
+                )}
+              </div>
               <CardContent className="p-4 space-y-2">
                 <Link href={`/my-listings/${a.listing.id}`} className="font-semibold text-sm line-clamp-2 hover:text-[var(--primary)] hover:underline block">{a.listing.title}</Link>
                 <p className="text-lg font-bold text-[var(--primary)]">

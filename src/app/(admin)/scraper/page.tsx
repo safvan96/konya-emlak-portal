@@ -192,7 +192,14 @@ export default function ScraperPage() {
             <TableBody>
               {runs.map((run) => (
                 <TableRow key={run.id}>
-                  <TableCell>{statusBadge(run.status)}</TableCell>
+                  <TableCell>
+                    {statusBadge(run.status)}
+                    {run.errorMessage && (
+                      <p className="text-xs text-red-500 mt-1 max-w-[150px] truncate" title={run.errorMessage}>
+                        {run.errorMessage}
+                      </p>
+                    )}
+                  </TableCell>
                   <TableCell>{run.totalFound}</TableCell>
                   <TableCell className="text-green-600 font-medium">{run.accepted}</TableCell>
                   <TableCell className="text-red-500">{run.rejected}</TableCell>

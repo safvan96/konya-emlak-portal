@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,8 @@ export default function ListingsPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 20, total: 0, totalPages: 0 });
   const { toast } = useToast();
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const debounceRef = useRef<NodeJS.Timeout>(undefined);
   const [filterOwner, setFilterOwner] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -172,10 +174,14 @@ export default function ListingsPage() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
             <Input
-              placeholder="Ara (başlık, konum)..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && fetchListings()}
+              placeholder="Ara (baslik, konum)..."
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
+                clearTimeout(debounceRef.current);
+                debounceRef.current = setTimeout(() => setSearch(e.target.value), 400);
+              }}
+              onKeyDown={(e) => { if (e.key === "Enter") { clearTimeout(debounceRef.current); setSearch(searchInput); } }}
             />
             <Select value={filterOwner} onChange={(e) => { setFilterOwner(e.target.value); }}>
               <option value="">Tüm Kaynaklar</option>
