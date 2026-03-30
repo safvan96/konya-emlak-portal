@@ -68,5 +68,6 @@ export const config = {
     "/api/analytics/:path*",
     "/api/sessions/:path*",
     "/api/images/:path*",
+    "/api/listings/bulk/:path*",
   ],
 };

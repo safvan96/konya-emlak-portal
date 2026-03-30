@@ -23,7 +23,8 @@ import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/listings", label: "İlanlar", icon: Building2 },
+  { href: "/listings", label: "Ilanlar", icon: Building2 },
+  { href: "/listings/map", label: "Ilce Haritasi", icon: MapPin },
   { href: "/customers", label: "Müşteriler", icon: Users },
   { href: "/assignments", label: "Atamalar", icon: Link2 },
   { href: "/logs", label: "Loglar", icon: ScrollText },

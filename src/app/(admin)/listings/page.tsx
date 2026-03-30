@@ -51,6 +51,9 @@ export default function ListingsPage() {
   const [showBulkAssign, setShowBulkAssign] = useState(false);
   const [bulkAssignCustomers, setBulkAssignCustomers] = useState<Array<{ id: string; name: string; surname: string }>>([]);
   const [bulkAssignTarget, setBulkAssignTarget] = useState("");
+  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
+  const [showCategoryChange, setShowCategoryChange] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const fetchListings = useCallback(async (page = 1) => {
     const params = new URLSearchParams({ page: String(page), limit: "20" });
@@ -213,11 +216,31 @@ export default function ListingsPage() {
               <Button size="sm" variant="outline" onClick={openBulkAssign}>
                 <UserPlus className="h-3 w-3 mr-1" /> Musteriye Ata
               </Button>
-              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("ACTIVE")}>Aktif Yap</Button>
-              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("PASSIVE")}>Pasif Yap</Button>
-              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("SOLD")}>Satildi</Button>
+              <Button size="sm" variant="outline" onClick={() => {
+                if (categories.length === 0) fetch("/api/cities").then(() => {});
+                fetch("/api/listings?limit=1").then((r) => r.json()).then(() => {
+                  // Kategorileri DB'den cekmek yerine basit liste
+                  setCategories([
+                    { id: "daire", name: "Daire" }, { id: "mustakil-ev", name: "Mustakil" },
+                    { id: "villa", name: "Villa" }, { id: "arsa", name: "Arsa" },
+                  ]);
+                });
+                setShowCategoryChange(!showCategoryChange);
+              }}>Kategori</Button>
+              <Button size="sm" variant="outline" onClick={async () => {
+                if (!confirm(`${selected.size} ilani tekrar filtrelemek istiyor musunuz?`)) return;
+                const res = await fetch("/api/listings/bulk", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ action: "refilter", ids: Array.from(selected) }),
+                });
+                if (res.ok) { const d = await res.json(); toast(`${d.updated} ilan tekrar filtrelendi`, "success"); }
+                fetchListings(pagination.page);
+              }}>Tekrar Filtrele</Button>
+              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("ACTIVE")}>Aktif</Button>
+              <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("PASSIVE")}>Pasif</Button>
               <Button size="sm" variant="destructive" onClick={bulkDelete}>Sil</Button>
-              <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowBulkAssign(false); }}>Iptal</Button>
+              <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowBulkAssign(false); setShowCategoryChange(false); }}>Iptal</Button>
             </div>
           </div>
           {showBulkAssign && (
@@ -231,6 +254,27 @@ export default function ListingsPage() {
               <Button size="sm" onClick={doBulkAssign} disabled={!bulkAssignTarget}>
                 {selected.size} Ilan Ata
               </Button>
+            </div>
+          )}
+          {showCategoryChange && (
+            <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] px-4 py-3">
+              <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="flex-1">
+                <option value="">Kategori secin...</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </Select>
+              <Button size="sm" disabled={!selectedCategory} onClick={async () => {
+                const res = await fetch("/api/listings/bulk", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ action: "changeCategory", ids: Array.from(selected), categoryId: selectedCategory }),
+                });
+                if (res.ok) { const d = await res.json(); toast(`${d.updated} ilanin kategorisi degistirildi`, "success"); }
+                setShowCategoryChange(false);
+                setSelectedCategory("");
+                fetchListings(pagination.page);
+              }}>Uygula</Button>
             </div>
           )}
         </div>
