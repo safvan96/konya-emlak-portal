@@ -67,6 +67,15 @@ export async function autoAssignListings() {
       skipDuplicates: true,
     });
 
+    // Müşteriye bildirim gönder
+    await prisma.userLog.create({
+      data: {
+        userId: pref.userId,
+        action: "ADMIN_NOTIFICATION",
+        details: `${newListingIds.length} yeni ilan tercihlerinize göre otomatik atandı. İlanlarınızı kontrol edin!`,
+      },
+    });
+
     console.log(`Otomatik atama: ${pref.user.id} -> ${newListingIds.length} ilan`);
   }
 }
