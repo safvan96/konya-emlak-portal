@@ -180,8 +180,11 @@ export async function scrapeEmlakjet(
 
   try {
     const typeSlug = listingType === "SALE" ? "satilik" : "kiralik";
-    // Emlakjet URL: /satilik-daire/konya/, /satilik-arsa/konya/ vb.
-    const propertyTypes = ["konut", "daire", "arsa", "villa"];
+    // Emlakjet URL: /satilik-daire/konya, /satilik-arsa/konya vb.
+    const propertyTypes = [
+      "konut", "daire", "mustakil-ev", "arsa", "villa",
+      "kooperatif", "ofis", "bina", "ciftlik-evi", "depo",
+    ];
     const allListingUrls: string[] = [];
 
     for (const propType of propertyTypes) {
