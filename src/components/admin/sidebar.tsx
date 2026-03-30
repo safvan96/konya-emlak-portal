@@ -19,6 +19,7 @@ import {
   BarChart3,
   Settings,
   FileText,
+  ClipboardCheck,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 
@@ -26,6 +27,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/listings", label: "Ilanlar", icon: Building2 },
   { href: "/listings/map", label: "Ilce Haritasi", icon: MapPin },
+  { href: "/review", label: "Inceleme", icon: ClipboardCheck },
   { href: "/customers", label: "Müşteriler", icon: Users },
   { href: "/assignments", label: "Atamalar", icon: Link2 },
   { href: "/logs", label: "Loglar", icon: ScrollText },

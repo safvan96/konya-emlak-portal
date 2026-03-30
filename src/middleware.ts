@@ -51,6 +51,7 @@ export const config = {
     "/analytics/:path*",
     "/settings/:path*",
     "/reports/:path*",
+    "/review/:path*",
     "/my-listings/:path*",
     "/favorites/:path*",
     "/profile/:path*",
