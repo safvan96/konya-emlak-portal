@@ -120,6 +120,16 @@ konya-emlak-portal/
 - Mobile-first responsive tasarım
 - Tüm metinler Türkçe
 
+## Multi-City Mimari (Kritik)
+- Sistem şehir-agnostik tasarlanmalı, Konya hardcode edilmemeli
+- `cities` tablosu: id, name, slug, sahibindenCityId, isActive
+- Her scraping işlemi city bazlı çalışır
+- İlanlar city foreign key ile ilişkilendirilir
+- Admin panelinde şehir yönetimi olmalı (ekle/aktif-pasif)
+- Müşteriler şehir bazlı filtreleme yapabilmeli
+- URL yapısı: /listings/konya, /listings/ankara vb.
+- İlk aşamada sadece Konya aktif, ama altyapı tüm şehirlere hazır
+
 ## Önemli Notlar
 - sahibinden.com scraping'i yasal gri alanda; robots.txt'e saygı göster
 - Rate limiting çok önemli, IP ban yememek için

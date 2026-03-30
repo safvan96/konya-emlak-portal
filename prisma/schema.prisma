@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum ListingType {
+  SALE
+  RENT
+}
+
+enum ListingStatus {
+  ACTIVE
+  PASSIVE
+  SOLD
+  RENTED
+}
+
+model City {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  slug            String    @unique
+  sahibindenCityId String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  listings        Listing[]
+
+  @@map("cities")
+}
+
+model User {
+  id            String       @id @default(cuid())
+  email         String       @unique
+  password      String
+  name          String
+  surname       String
+  role          Role         @default(CUSTOMER)
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  assignments   Assignment[]
+  favorites     Favorite[]
+  logs          UserLog[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  listings  Listing[]
+
+  @@map("categories")
+}
+
+model Listing {
+  id              String        @id @default(cuid())
+  sahibindenId    String        @unique
+  title           String
+  description     String
+  price           Float?
+  currency        String        @default("TL")
+  listingType     ListingType   @default(SALE)
+  location        String?
+  district        String?
+  neighborhood    String?
+  roomCount       String?
+  squareMeters    Int?
+  buildingAge     String?
+  floor           String?
+  imageUrls       String[]
+  sourceUrl       String
+  isFromOwner     Boolean       @default(true)
+  rejectionReason String?
+  status          ListingStatus @default(ACTIVE)
+  cityId          String
+  city            City          @relation(fields: [cityId], references: [id])
+  categoryId      String?
+  category        Category?     @relation(fields: [categoryId], references: [id])
+  scrapedAt       DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  assignments     Assignment[]
+  favorites       Favorite[]
+
+  @@index([cityId])
+  @@index([categoryId])
+  @@index([isFromOwner])
+  @@index([status])
+  @@index([listingType])
+  @@map("listings")
+}
+
+model Assignment {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId  String
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  assignedBy String
+  assignedAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@index([listingId])
+  @@map("assignments")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+  @@map("favorites")
+}
+
+model UserLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("user_logs")
+}
+
+model ScraperRun {
+  id            String   @id @default(cuid())
+  cityId        String
+  totalFound    Int      @default(0)
+  accepted      Int      @default(0)
+  rejected      Int      @default(0)
+  duplicates    Int      @default(0)
+  errors        Int      @default(0)
+  duration      Int?
+  status        String   @default("running")
+  errorMessage  String?
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+
+  @@map("scraper_runs")
+}
+
+model BlacklistKeyword {
+  id        String   @id @default(cuid())
+  keyword   String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("blacklist_keywords")
+}

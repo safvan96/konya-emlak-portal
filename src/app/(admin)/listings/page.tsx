@@ -1,0 +1,231 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatPrice, formatDate } from "@/lib/utils";
+import { ExternalLink, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+
+interface Listing {
+  id: string;
+  sahibindenId: string;
+  title: string;
+  price: number | null;
+  currency: string;
+  listingType: string;
+  location: string | null;
+  isFromOwner: boolean;
+  rejectionReason: string | null;
+  status: string;
+  sourceUrl: string;
+  createdAt: string;
+  city: { name: string };
+  category: { name: string } | null;
+  _count: { assignments: number };
+}
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export default function ListingsPage() {
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 20, total: 0, totalPages: 0 });
+  const [search, setSearch] = useState("");
+  const [filterOwner, setFilterOwner] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterType, setFilterType] = useState("");
+
+  const fetchListings = useCallback(async (page = 1) => {
+    const params = new URLSearchParams({ page: String(page), limit: "20" });
+    if (search) params.set("search", search);
+    if (filterOwner) params.set("isFromOwner", filterOwner);
+    if (filterStatus) params.set("status", filterStatus);
+    if (filterType) params.set("listingType", filterType);
+
+    const res = await fetch(`/api/listings?${params}`);
+    if (res.ok) {
+      const data = await res.json();
+      setListings(data.listings);
+      setPagination(data.pagination);
+    }
+  }, [search, filterOwner, filterStatus, filterType]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+
+  async function deleteListing(id: string) {
+    if (!confirm("Bu ilanı silmek istediğinize emin misiniz?")) return;
+    await fetch(`/api/listings?id=${id}`, { method: "DELETE" });
+    fetchListings(pagination.page);
+  }
+
+  async function updateStatus(id: string, status: string) {
+    await fetch("/api/listings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status }),
+    });
+    fetchListings(pagination.page);
+  }
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">İlan Yönetimi</h1>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Filtreler</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-4">
+            <Input
+              placeholder="Ara (başlık, konum)..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && fetchListings()}
+            />
+            <Select value={filterOwner} onChange={(e) => { setFilterOwner(e.target.value); }}>
+              <option value="">Tüm Kaynaklar</option>
+              <option value="true">Sahibinden</option>
+              <option value="false">Emlakçı</option>
+            </Select>
+            <Select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); }}>
+              <option value="">Tüm Durumlar</option>
+              <option value="ACTIVE">Aktif</option>
+              <option value="PASSIVE">Pasif</option>
+              <option value="SOLD">Satıldı</option>
+              <option value="RENTED">Kiralandı</option>
+            </Select>
+            <Select value={filterType} onChange={(e) => { setFilterType(e.target.value); }}>
+              <option value="">Tüm Tipler</option>
+              <option value="SALE">Satılık</option>
+              <option value="RENT">Kiralık</option>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Başlık</TableHead>
+                <TableHead>Fiyat</TableHead>
+                <TableHead>Şehir</TableHead>
+                <TableHead>Kategori</TableHead>
+                <TableHead>Kaynak</TableHead>
+                <TableHead>Durum</TableHead>
+                <TableHead>Atama</TableHead>
+                <TableHead>Tarih</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {listings.map((listing) => (
+                <TableRow key={listing.id}>
+                  <TableCell className="max-w-[200px]">
+                    <div className="truncate font-medium" title={listing.title}>
+                      {listing.title}
+                    </div>
+                  </TableCell>
+                  <TableCell>{formatPrice(listing.price)}</TableCell>
+                  <TableCell>{listing.city.name}</TableCell>
+                  <TableCell>{listing.category?.name || "-"}</TableCell>
+                  <TableCell>
+                    {listing.isFromOwner ? (
+                      <Badge variant="success">Sahibinden</Badge>
+                    ) : (
+                      <Badge variant="destructive" title={listing.rejectionReason || ""}>
+                        Emlakçı
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      value={listing.status}
+                      onChange={(e) => updateStatus(listing.id, e.target.value)}
+                      className="h-8 text-xs w-28"
+                    >
+                      <option value="ACTIVE">Aktif</option>
+                      <option value="PASSIVE">Pasif</option>
+                      <option value="SOLD">Satıldı</option>
+                      <option value="RENTED">Kiralandı</option>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{listing._count.assignments}</Badge>
+                  </TableCell>
+                  <TableCell className="text-xs">{formatDate(listing.createdAt)}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <a
+                        href={listing.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1 hover:bg-[var(--accent)] rounded"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                      <button
+                        onClick={() => deleteListing(listing.id)}
+                        className="p-1 hover:bg-red-50 rounded text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {listings.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-[var(--muted-foreground)]">
+                    İlan bulunamadı
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-[var(--muted-foreground)]">
+            Toplam {pagination.total} ilan
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page <= 1}
+              onClick={() => fetchListings(pagination.page - 1)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm">
+              {pagination.page} / {pagination.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page >= pagination.totalPages}
+              onClick={() => fetchListings(pagination.page + 1)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
