@@ -1,0 +1,128 @@
+# Konya Emlak Portal - CLAUDE.md
+
+## Proje Özeti
+Sahibinden.com'daki Konya şehri emlak ilanlarını otomatik tarayan, emlakçı/danışman ilanlarını filtreleyen ve sadece gerçek sahiplerinden satılan ilanları yöneten bir web platformu.
+
+## İş Mantığı (Kritik)
+- Sahibinden.com Konya emlak ilanları periyodik olarak taranır (scraping)
+- Her ilanın **açıklama kısmı** analiz edilir
+- **Filtreleme kuralı**: Açıklamada "emlak danışmanı", "gayrimenkul danışmanı", "remax", "century 21", "coldwell banker", "keller williams", "emlak ofisi", "gayrimenkul ofisi", "portföy no", "danışmanınız" gibi ifadeler varsa → İLAN REDDEDİLİR
+- Sadece gerçek mal sahiplerinin ilanları sisteme alınır
+- Yönetici, filtrelenmiş ilanları müşterilere **manuel olarak atar**
+- Müşteri sadece kendisine atanan ilanları görür
+
+## Kullanıcı Rolleri
+1. **Yönetici (Admin)**
+   - Tüm ilanları görür ve yönetir
+   - Müşteri oluşturur/düzenler/siler
+   - Müşterilere ilan atar (ad-soyad girerek, istediği kadar)
+   - Müşteri giriş loglarını görür
+   - Scraping işlemini manuel tetikleyebilir
+   - İlan kategorilerini yönetir
+
+2. **Müşteri (Customer)**
+   - Giriş yapar (email + şifre)
+   - Sadece kendisine atanmış ilanları görür
+   - İlan detaylarını inceleyebilir
+   - Favori ilanlarını işaretleyebilir
+
+## Teknik Yığın (Tech Stack)
+- **Frontend**: Next.js 14 (App Router) + Tailwind CSS + shadcn/ui
+- **Backend**: Next.js API Routes + Prisma ORM
+- **Veritabanı**: PostgreSQL
+- **Auth**: NextAuth.js (Credentials provider, role-based)
+- **Scraping**: Puppeteer + node-cron (zamanlayıcı)
+- **Deployment**: Docker-ready, VPS deploy
+
+## Veritabanı Şeması (Özet)
+- `users` → id, email, password, name, surname, role (ADMIN|CUSTOMER), createdAt
+- `listings` → id, sahibindenId, title, description, price, location, category, imageUrls, sourceUrl, isFromOwner, status, scrapedAt, createdAt
+- `categories` → id, name, slug (daire, müstakil, arsa, villa, vb.)
+- `assignments` → id, userId, listingId, assignedAt, assignedBy
+- `user_logs` → id, userId, action, details, ipAddress, createdAt
+- `favorites` → id, userId, listingId, createdAt
+
+## Scraping Kuralları
+- Hedef: sahibinden.com/satilik + sahibinden.com/kiralik → Konya filtresi
+- Her ilan için detay sayfasına girilir
+- Açıklama metni NLP/regex ile analiz edilir
+- Emlakçı tespiti yapılır → isFromOwner flag'i set edilir
+- Duplicate kontrolü: sahibindenId ile
+- Rate limiting: istekler arası 2-5sn random delay
+- User-Agent rotation
+
+## Filtreleme Blacklist Kelimeleri
+```
+emlak danışmanı, gayrimenkul danışmanı, remax, re/max, century 21,
+coldwell banker, keller williams, emlak ofisi, gayrimenkul ofisi,
+portföy no, portföy numarası, danışmanınız, emlak müşaviri,
+gayrimenkul yatırım, turyap, emlak konut, broker, franchise,
+ofisimiz, şubemiz, mağazamız, profesyonel ekibimiz
+```
+
+## Proje Yapısı
+```
+konya-emlak-portal/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (auth)/             # Login/Register sayfaları
+│   │   ├── (admin)/            # Admin panel sayfaları
+│   │   │   ├── dashboard/
+│   │   │   ├── listings/
+│   │   │   ├── customers/
+│   │   │   ├── assignments/
+│   │   │   └── logs/
+│   │   ├── (customer)/         # Müşteri panel sayfaları
+│   │   │   ├── my-listings/
+│   │   │   ├── favorites/
+│   │   │   └── profile/
+│   │   ├── api/                # API Routes
+│   │   │   ├── auth/
+│   │   │   ├── listings/
+│   │   │   ├── customers/
+│   │   │   ├── assignments/
+│   │   │   ├── scraper/
+│   │   │   └── logs/
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── ui/                 # shadcn/ui components
+│   │   ├── admin/              # Admin-specific components
+│   │   ├── customer/           # Customer-specific components
+│   │   └── shared/             # Shared components
+│   ├── lib/
+│   │   ├── prisma.ts           # Prisma client
+│   │   ├── auth.ts             # Auth config
+│   │   ├── scraper/            # Scraping engine
+│   │   │   ├── sahibinden.ts   # Sahibinden scraper
+│   │   │   ├── filter.ts       # Emlakçı filtresi
+│   │   │   └── scheduler.ts    # Cron jobs
+│   │   └── utils.ts
+│   ├── types/
+│   └── middleware.ts           # Auth + role middleware
+├── prisma/
+│   ├── schema.prisma
+│   └── seed.ts
+├── public/
+├── docker-compose.yml
+├── Dockerfile
+├── .env.example
+├── CLAUDE.md
+└── PLAN.md
+```
+
+## Geliştirme Kuralları
+- Tüm API route'ları auth middleware'den geçmeli
+- Admin route'ları role check yapmalı
+- Her kullanıcı aksiyonu `user_logs` tablosuna yazılmalı
+- Scraper hata toleranslı olmalı (retry logic)
+- Türkçe karakter desteği tam olmalı
+- Mobile-first responsive tasarım
+- Tüm metinler Türkçe
+
+## Önemli Notlar
+- sahibinden.com scraping'i yasal gri alanda; robots.txt'e saygı göster
+- Rate limiting çok önemli, IP ban yememek için
+- Müşteri sadece KENDİ ilanlarını görür, başka müşterinin ilanlarını ASLA
+- Admin her şeyi görür ve yönetir
+- Log sistemi detaylı olmalı (giriş, çıkış, ilan görüntüleme, vs.)
