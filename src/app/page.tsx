@@ -13,7 +13,7 @@ export default function Home() {
   useEffect(() => {
     if (status === "loading") return;
     if (session) {
-      router.push(session.user.role === "ADMIN" ? "/dashboard" : "/my-listings");
+      router.push(session.user.role === "ADMIN" ? "/dashboard" : "/home");
     }
   }, [session, status, router]);
 

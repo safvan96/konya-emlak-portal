@@ -18,7 +18,7 @@ export default withAuth(
       path.startsWith("/my-listings") || path.startsWith("/favorites") ||
       path.startsWith("/profile") || path.startsWith("/preferences") ||
       path.startsWith("/compare") || path.startsWith("/notifications") ||
-      path.startsWith("/history")
+      path.startsWith("/history") || path.startsWith("/home")
     ) {
       if (token?.role === "ADMIN") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
@@ -58,6 +58,7 @@ export const config = {
     "/compare/:path*",
     "/notifications/:path*",
     "/history/:path*",
+    "/home/:path*",
     "/api/listings/:path*",
     "/api/customers/:path*",
     "/api/assignments/:path*",
