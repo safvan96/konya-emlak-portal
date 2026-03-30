@@ -31,6 +31,8 @@ const ACTION_LABELS: Record<string, string> = {
   PASSWORD_CHANGED: "Şifre Değişikliği",
   CITY_CREATED: "Şehir Ekleme",
   CITY_UPDATED: "Şehir Güncelleme",
+  ADMIN_NOTIFICATION: "Admin Bildirimi",
+  SEND_NOTIFICATION: "Bildirim Gonderme",
 };
 
 export default function LogsPage() {

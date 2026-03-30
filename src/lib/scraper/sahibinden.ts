@@ -87,6 +87,8 @@ export async function scrapeSahibinden(
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
+        "--disable-web-security",
+        "--disable-features=IsolateOrigins,site-per-process",
         "--disable-dev-shm-usage",
         "--disable-gpu",
       ],

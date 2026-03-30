@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
-import { Plus, Trash2, Edit, X, Link2, Download, Upload } from "lucide-react";
+import { Plus, Trash2, Edit, X, Link2, Download, Upload, Bell } from "lucide-react";
 import Link from "next/link";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
@@ -30,6 +30,8 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importResult, setImportResult] = useState<string | null>(null);
+  const [showNotify, setShowNotify] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -173,14 +175,43 @@ export default function CustomersPage() {
       )}
 
       {selected.size > 0 && (
-        <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3">
-          <span className="text-sm font-medium">{selected.size} musteri secildi</span>
-          <div className="flex gap-2 ml-auto">
-            <Button size="sm" variant="outline" onClick={() => bulkToggleActive(true)}>Aktif Yap</Button>
-            <Button size="sm" variant="outline" onClick={() => bulkToggleActive(false)}>Pasif Yap</Button>
-            <Button size="sm" variant="destructive" onClick={bulkDeleteCustomers}>Sil</Button>
-            <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>Iptal</Button>
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3 flex-wrap">
+            <span className="text-sm font-medium">{selected.size} musteri secildi</span>
+            <div className="flex gap-2 ml-auto flex-wrap">
+              <Button size="sm" variant="outline" onClick={() => setShowNotify(!showNotify)}>
+                <Bell className="h-3 w-3 mr-1" /> Bildirim
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => bulkToggleActive(true)}>Aktif Yap</Button>
+              <Button size="sm" variant="outline" onClick={() => bulkToggleActive(false)}>Pasif Yap</Button>
+              <Button size="sm" variant="destructive" onClick={bulkDeleteCustomers}>Sil</Button>
+            <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowNotify(false); }}>Iptal</Button>
+            </div>
           </div>
+          {showNotify && (
+            <div className="flex gap-2 rounded-lg border border-[var(--border)] px-4 py-3">
+              <input
+                type="text"
+                placeholder="Bildirim mesaji yazin..."
+                value={notifyMessage}
+                onChange={(e) => setNotifyMessage(e.target.value)}
+                className="flex-1 rounded-md border border-[var(--border)] bg-transparent px-3 py-2 text-sm"
+              />
+              <Button size="sm" disabled={!notifyMessage.trim()} onClick={async () => {
+                const res = await fetch("/api/notifications", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ userIds: Array.from(selected), message: notifyMessage }),
+                });
+                if (res.ok) {
+                  const d = await res.json();
+                  toast(`${d.sent} musteriye bildirim gonderildi`, "success");
+                  setNotifyMessage("");
+                  setShowNotify(false);
+                }
+              }}>Gonder</Button>
+            </div>
+          )}
         </div>
       )}
 
