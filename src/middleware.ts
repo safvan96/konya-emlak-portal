@@ -46,6 +46,8 @@ export const config = {
     "/cities/:path*",
     "/analytics/:path*",
     "/settings/:path*",
+    "/reports/:path*",
+    "/api/reports/:path*",
     "/my-listings/:path*",
     "/favorites/:path*",
     "/profile/:path*",
