@@ -85,6 +85,54 @@ export async function GET() {
     _count: true,
   });
 
+  // Şehir bazlı fiyat analizi (satılık)
+  const cityPriceStats = [];
+  for (const city of cities) {
+    const stats = await prisma.listing.aggregate({
+      where: { isFromOwner: true, status: "ACTIVE", cityId: city.id, listingType: "SALE", price: { not: null, gt: 0 } },
+      _avg: { price: true },
+      _min: { price: true },
+      _max: { price: true },
+      _count: true,
+    });
+    if (stats._count > 0) {
+      cityPriceStats.push({
+        city: city.name,
+        avg: Math.round(stats._avg.price || 0),
+        min: stats._min.price || 0,
+        max: stats._max.price || 0,
+        count: stats._count,
+      });
+    }
+  }
+
+  // İlçe bazlı ortalama fiyat (en çok ilanlı şehir)
+  const topCity = byCityData[0];
+  const topCityId = cities.find(c => c.name === topCity?.city)?.id;
+  let districtPrices: Array<{ district: string; avg: number; count: number }> = [];
+  if (topCityId) {
+    const byDistrict = await prisma.listing.groupBy({
+      by: ["district"],
+      where: { isFromOwner: true, status: "ACTIVE", cityId: topCityId, listingType: "SALE", price: { not: null, gt: 0 } },
+      _avg: { price: true },
+      _count: true,
+    });
+    districtPrices = byDistrict
+      .filter(d => d.district && d._count >= 2)
+      .map(d => ({
+        district: d.district!,
+        avg: Math.round(d._avg.price || 0),
+        count: d._count,
+      }))
+      .sort((a, b) => b.avg - a.avg)
+      .slice(0, 15);
+  }
+
+  // Emlakçı filtreleme başarı oranı
+  const totalScraped = await prisma.listing.count();
+  const filteredOut = await prisma.listing.count({ where: { isFromOwner: false } });
+  const filterRate = totalScraped > 0 ? Math.round((filteredOut / totalScraped) * 100) : 0;
+
   return NextResponse.json({
     byCity: byCityData,
     byCategory: byCategoryData,
@@ -97,5 +145,8 @@ export async function GET() {
       max: priceStats._max.price || 0,
       count: priceStats._count,
     },
+    cityPriceStats,
+    districtPrices: { city: topCity?.city || "", data: districtPrices },
+    filterStats: { total: totalScraped, filtered: filteredOut, rate: filterRate },
   });
 }
