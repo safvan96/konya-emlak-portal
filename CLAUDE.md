@@ -101,10 +101,13 @@ konya-emlak-portal/
 │   ├── lib/
 │   │   ├── prisma.ts           # Prisma client
 │   │   ├── auth.ts             # Auth config
-│   │   ├── scraper/            # Scraping engine
-│   │   │   ├── sahibinden.ts   # Sahibinden scraper
-│   │   │   ├── filter.ts       # Emlakçı filtresi
-│   │   │   └── scheduler.ts    # Cron jobs
+│   │   ├── scraper/            # Scraping engine (çoklu mod)
+│   │   │   ├── sahibinden.ts   # Sahibinden scraper + smartScrape()
+│   │   │   ├── emlakjet-scraper.ts # Emlakjet scraper (VPS'den direkt çalışır)
+│   │   │   ├── http-scraper.ts # HTTP tabanlı scraper (ScraperAPI/Zenrows)
+│   │   │   ├── search-scraper.ts # DuckDuckGo arama motoru scraper
+│   │   │   ├── filter.ts       # Emlakçı filtresi (34 blacklist kelime)
+│   │   │   └── scheduler.ts    # Cron jobs (08:00, 20:00)
 │   │   └── utils.ts
 │   ├── types/
 │   └── middleware.ts           # Auth + role middleware
@@ -138,9 +141,15 @@ konya-emlak-portal/
 - URL yapısı: /listings/konya, /listings/ankara vb.
 - İlk aşamada sadece Konya aktif, ama altyapı tüm şehirlere hazır
 
+## Scraper Modları (smartScrape - otomatik seçim)
+1. **Emlakjet** (varsayılan) - API key gerektirmez, VPS'den direkt çalışır
+2. **ScraperAPI/Zenrows** - SCRAPER_API_KEY env ile sahibinden.com'dan çeker
+3. **Puppeteer** - PROXY_URL veya SAHIBINDEN_EMAIL ile sahibinden.com
+- Sahibinden.com datacenter IP'lerini engelliyor, bu yüzden Emlakjet varsayılan
+- Emlakjet'de sahibindenId alanı "EJ" prefix'li (EJ19165132 gibi)
+
 ## Önemli Notlar
-- sahibinden.com scraping'i yasal gri alanda; robots.txt'e saygı göster
-- Rate limiting çok önemli, IP ban yememek için
+- Emlakjet + sahibinden.com scraping; rate limiting çok önemli
 - Müşteri sadece KENDİ ilanlarını görür, başka müşterinin ilanlarını ASLA
 - Admin her şeyi görür ve yönetir
 - Log sistemi detaylı olmalı (giriş, çıkış, ilan görüntüleme, vs.)

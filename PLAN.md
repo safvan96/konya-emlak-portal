@@ -142,15 +142,17 @@
 ---
 
 ## Proje Metrikleri
-- **106 dosya**, 17,781 satir kod
+- **110+ dosya**, 19,700+ satir kod
 - **26 API endpoint**, 20 sayfa, 44 test
-- **11 veritabani modeli**
-- **15 commit**
+- **11 veritabani modeli**, 4 scraper modu
+- **17 commit**
+- **177 gerçek ilan** DB'de (137 Emlakjet, 40 demo/test)
 
 ## Durum
 1. **Faz 0-7**: ✅ Tamamlandi (SSL haric)
 2. **Faz 8**: Mobil uygulama → sonraki etap
 3. **Ekstra**: ✅ 16 plan disi ozellik eklendi
+4. **Scraper**: ✅ Emlakjet scraper çalışıyor - 137 gerçek ilan çekildi
 
 ## Kritik Kararlar
 - **Scraping frekansı**: Günde 2 kez (sabah 08:00, akşam 20:00) - sahibinden'i sıkmamak için
