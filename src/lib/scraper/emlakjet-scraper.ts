@@ -205,7 +205,7 @@ export async function scrapeEmlakjet(
 
   try {
     const typeSlug = listingType === "SALE" ? "satilik" : "kiralik";
-    // Emlakjet URL: /satilik-daire/konya, /satilik-arsa/konya vb.
+    // Emlakjet URL: /satilik-daire/konya/sahibinden → sadece gerçek sahiplerinden ilanlar
     const propertyTypes = [
       "konut", "daire", "mustakil-ev", "arsa", "villa",
       "kooperatif", "ofis", "bina", "ciftlik-evi", "depo",
@@ -213,7 +213,8 @@ export async function scrapeEmlakjet(
     const allListingUrls: string[] = [];
 
     for (const propType of propertyTypes) {
-      const baseUrl = `https://www.emlakjet.com/${typeSlug}-${propType}/${city.slug}`;
+      // /sahibinden filtresi - emlakçı ilanlarını kaynakta eler
+      const baseUrl = `https://www.emlakjet.com/${typeSlug}-${propType}/${city.slug}/sahibinden`;
 
       for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
         try {
