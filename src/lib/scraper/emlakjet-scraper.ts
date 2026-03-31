@@ -66,6 +66,7 @@ interface EmlakjetListing {
   floor: string | null;
   imageUrls: string[];
   sellerName: string | null;
+  sellerPhone: string | null;
 }
 
 function parseListPage(html: string): string[] {
@@ -139,11 +140,26 @@ function parseDetailPage(html: string, url: string): EmlakjetListing | null {
       if (!imageUrls.includes(m[0])) imageUrls.push(m[0]);
     }
 
-    // Satıcı adı - açıklamadan çıkar
+    // Satıcı adı - açıklamadan veya JSON'dan
     let sellerName: string | null = null;
     const sellerMatch = description.match(/^([^,]+?)(?:\s+\d|\s+konumunda)/);
     if (sellerMatch && sellerMatch[1].length < 50) {
       sellerName = sellerMatch[1].trim();
+    }
+    // "Sahibinden" etiketli ise satıcı adı "Sahibinden" olarak ayarla
+    if (!sellerName || sellerName.toLowerCase() === "sahibinden") {
+      sellerName = "Sahibinden";
+    }
+
+    // Telefon numarası - JSON'dan
+    let sellerPhone: string | null = null;
+    const phoneMatch = html.match(/"telephone"\s*:\s*"(\d{10,11})"/);
+    if (phoneMatch) {
+      sellerPhone = phoneMatch[1];
+      // Başına 0 ekle
+      if (sellerPhone.length === 10 && !sellerPhone.startsWith("0")) {
+        sellerPhone = "0" + sellerPhone;
+      }
     }
 
     if (!title && !description) return null;
@@ -165,6 +181,7 @@ function parseDetailPage(html: string, url: string): EmlakjetListing | null {
       floor: null,
       imageUrls: imageUrls.slice(0, 20),
       sellerName,
+      sellerPhone,
     };
   } catch (err) {
     console.error(`Parse hata:`, err instanceof Error ? err.message : err);
@@ -349,6 +366,8 @@ export async function scrapeEmlakjet(
             imageUrls: listing.imageUrls,
             sourceUrl: listing.url,
             sahibindenUrl: buildSahibindenUrl(listing.title, listingType, city.slug, listing.district),
+            sellerName: listing.sellerName,
+            sellerPhone: listing.sellerPhone,
             isFromOwner: filterResult.isFromOwner,
             rejectionReason: filterResult.rejectionReason,
             status: filterResult.isFromOwner ? "ACTIVE" : "PASSIVE",

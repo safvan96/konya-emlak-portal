@@ -84,6 +84,8 @@ model Listing {
   imageUrls       String[]
   sourceUrl       String
   sahibindenUrl   String?
+  sellerName      String?
+  sellerPhone     String?
   isFromOwner     Boolean       @default(true)
   rejectionReason String?
   status          ListingStatus @default(ACTIVE)
