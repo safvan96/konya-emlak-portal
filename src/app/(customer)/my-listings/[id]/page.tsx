@@ -39,6 +39,7 @@ interface Listing {
   floor: string | null;
   imageUrls: string[];
   sourceUrl: string;
+  sahibindenUrl: string | null;
   createdAt: string;
   city: { name: string };
   category: { name: string } | null;
@@ -245,14 +246,26 @@ export default function ListingDetailPage() {
             </CardContent>
           </Card>
 
-          <a
-            href={listing.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 rounded-md border border-[var(--border)] px-4 py-3 text-sm font-medium hover:bg-[var(--accent)] transition-colors"
-          >
-            <ExternalLink className="h-4 w-4" /> Sahibinden'de Gör
-          </a>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={listing.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              <ExternalLink className="h-4 w-4" /> Emlakjet
+            </a>
+            {listing.sahibindenUrl && (
+              <a
+                href={listing.sahibindenUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-md border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-medium text-orange-700 hover:bg-orange-100 transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" /> Sahibinden
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>

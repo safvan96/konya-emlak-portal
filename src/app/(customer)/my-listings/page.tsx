@@ -26,6 +26,7 @@ interface Assignment {
     squareMeters: number | null;
     imageUrls: string[];
     sourceUrl: string;
+    sahibindenUrl: string | null;
     city: { name: string };
     category: { name: string } | null;
   };
@@ -242,15 +243,18 @@ export default function MyListingsPage() {
                 {a.listing.category && (
                   <Badge variant="outline" className="text-xs">{a.listing.category.name}</Badge>
                 )}
-                <a
-                  href={a.listing.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs text-[var(--primary)] hover:underline mt-2"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                  Sahibinden&apos;de Gör
-                </a>
+                <div className="flex gap-3 mt-2">
+                  <a href={a.listing.sourceUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                    <ExternalLink className="h-3 w-3" /> Emlakjet
+                  </a>
+                  {a.listing.sahibindenUrl && (
+                    <a href={a.listing.sahibindenUrl} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-orange-600 hover:underline">
+                      <ExternalLink className="h-3 w-3" /> Sahibinden
+                    </a>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}

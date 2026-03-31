@@ -22,6 +22,7 @@ interface FavoriteItem {
     squareMeters: number | null;
     imageUrls: string[];
     sourceUrl: string;
+    sahibindenUrl: string | null;
     city: { name: string };
     category: { name: string } | null;
   };
@@ -99,9 +100,18 @@ export default function FavoritesPage() {
                     <span className="flex items-center gap-1"><Ruler className="h-3 w-3" />{fav.listing.squareMeters} m²</span>
                   )}
                 </div>
-                <a href={fav.listing.sourceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-[var(--primary)] hover:underline mt-2">
-                  <ExternalLink className="h-3 w-3" /> Sahibinden&apos;de Gör
-                </a>
+                <div className="flex gap-3 mt-2">
+                  <a href={fav.listing.sourceUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                    <ExternalLink className="h-3 w-3" /> Emlakjet
+                  </a>
+                  {fav.listing.sahibindenUrl && (
+                    <a href={fav.listing.sahibindenUrl} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-orange-600 hover:underline">
+                      <ExternalLink className="h-3 w-3" /> Sahibinden
+                    </a>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}
