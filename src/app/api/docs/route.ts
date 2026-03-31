@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // API dokumantasyonu - public endpoint
 export async function GET() {
   return NextResponse.json({
-    name: "Emlak Portal API",
+    name: "EvSahip API",
     version: "1.0.0",
     endpoints: [
       { method: "GET", path: "/api/health", auth: false, description: "Sistem durumu" },

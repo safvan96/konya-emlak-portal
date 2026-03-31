@@ -1,0 +1,9 @@
+scripts/
+tests/
+logs/
+*.log
+.env
+docker-compose.yml
+Dockerfile
+nginx.conf
+ecosystem.config.js

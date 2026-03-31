@@ -48,7 +48,7 @@ export function AdminSidebar() {
     <>
       {/* Mobile header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-[var(--border)] bg-[var(--card)] px-4 lg:hidden">
-        <h1 className="text-lg font-bold text-[var(--primary)]">Emlak Portal</h1>
+        <h1 className="text-lg font-bold text-[var(--primary)]">EvSahip</h1>
         <button onClick={() => setOpen(!open)} className="p-2 hover:bg-[var(--accent)] rounded-md">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -67,7 +67,7 @@ export function AdminSidebar() {
         )}
       >
         <div className="flex h-16 items-center border-b border-[var(--border)] px-6">
-          <h1 className="text-xl font-bold text-[var(--primary)]">Emlak Portal</h1>
+          <h1 className="text-xl font-bold text-[var(--primary)]">EvSahip</h1>
         </div>
         <nav className="flex flex-col gap-1 p-4">
           {navItems.map((item) => {

@@ -27,6 +27,9 @@ interface Listing {
   sahibindenUrl: string | null;
   sellerName: string | null;
   sellerPhone: string | null;
+  imageUrls: string[];
+  roomCount: string | null;
+  squareMeters: number | null;
   createdAt: string;
   city: { name: string };
   category: { name: string } | null;
@@ -323,11 +326,10 @@ export default function ListingsPage() {
                     className="rounded"
                   />
                 </TableHead>
-                <TableHead>Başlık</TableHead>
+                <TableHead className="min-w-[300px]">İlan</TableHead>
                 <TableHead>Fiyat</TableHead>
                 <TableHead>Telefon</TableHead>
                 <TableHead>Şehir</TableHead>
-                <TableHead>Kategori</TableHead>
                 <TableHead>Kaynak</TableHead>
                 <TableHead>Durum</TableHead>
                 <TableHead>Atama</TableHead>
@@ -346,12 +348,33 @@ export default function ListingsPage() {
                       className="rounded"
                     />
                   </TableCell>
-                  <TableCell className="max-w-[200px]">
-                    <Link href={`/listings/${listing.id}`} className="truncate font-medium hover:text-[var(--primary)] hover:underline block" title={listing.title}>
-                      {listing.title}
-                    </Link>
+                  <TableCell className="max-w-[350px]">
+                    <div className="flex items-center gap-3">
+                      {listing.imageUrls?.[0] ? (
+                        <img
+                          src={`/api/images?url=${encodeURIComponent(listing.imageUrls[0])}`}
+                          alt=""
+                          className="w-16 h-12 rounded object-cover flex-shrink-0 bg-[var(--muted)]"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                        />
+                      ) : (
+                        <div className="w-16 h-12 rounded bg-[var(--muted)] flex-shrink-0 flex items-center justify-center text-xs text-[var(--muted-foreground)]">Yok</div>
+                      )}
+                      <div className="min-w-0">
+                        <Link href={`/listings/${listing.id}`} className="font-medium text-sm hover:text-[var(--primary)] hover:underline block truncate" title={listing.title}>
+                          {listing.title}
+                        </Link>
+                        <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)] mt-0.5">
+                          {listing.roomCount && <span>{listing.roomCount}</span>}
+                          {listing.squareMeters && <span>{listing.squareMeters} m²</span>}
+                          {listing.category?.name && <span>{listing.category.name}</span>}
+                        </div>
+                      </div>
+                    </div>
                   </TableCell>
-                  <TableCell>{formatPrice(listing.price)}</TableCell>
+                  <TableCell>
+                    <span className="font-bold text-[var(--primary)]">{formatPrice(listing.price)}</span>
+                  </TableCell>
                   <TableCell>
                     {listing.sellerPhone ? (
                       <a href={`tel:${listing.sellerPhone}`} className="text-xs font-mono text-green-700 hover:underline">
@@ -360,7 +383,6 @@ export default function ListingsPage() {
                     ) : "-"}
                   </TableCell>
                   <TableCell>{listing.city.name}</TableCell>
-                  <TableCell>{listing.category?.name || "-"}</TableCell>
                   <TableCell>
                     {listing.isFromOwner ? (
                       <Badge variant="success">Sahibinden</Badge>

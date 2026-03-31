@@ -32,7 +32,7 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-[var(--border)]">
         <div className="mx-auto max-w-6xl flex items-center justify-between px-4 py-4">
-          <h1 className="text-2xl font-bold text-[var(--primary)]">Emlak Portal</h1>
+          <h1 className="text-2xl font-bold text-[var(--primary)]">EvSahip</h1>
           <Link
             href="/login"
             className="rounded-md bg-[var(--primary)] text-[var(--primary-foreground)] px-4 py-2 text-sm font-medium hover:opacity-90 transition"
@@ -46,7 +46,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-4 py-20 text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
           Sahibinden Direkt <br />
-          <span className="text-[var(--primary)]">Emlak İlanları</span>
+          <span className="text-[var(--primary)]">Konya Emlak İlanları</span>
         </h2>
         <p className="text-lg text-[var(--muted-foreground)] max-w-2xl mx-auto mb-8">
           Emlakçı ve danışman ilanlarını otomatik filtreleyen, sadece gerçek sahiplerinden satılan
@@ -115,7 +115,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-[var(--border)] py-8">
         <div className="mx-auto max-w-6xl px-4 text-center text-sm text-[var(--muted-foreground)]">
-          Emlak Portal &copy; {new Date().getFullYear()}
+          EvSahip &copy; {new Date().getFullYear()}
         </div>
       </footer>
     </div>

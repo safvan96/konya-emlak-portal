@@ -6,14 +6,14 @@ import { KeyboardShortcuts } from "@/components/shared/keyboard-shortcuts";
 import { ServiceWorkerRegister } from "@/components/shared/sw-register";
 
 export const metadata: Metadata = {
-  title: "Emlak Portal - Sahibinden Direkt İlanlar",
-  description: "Sahibinden direkt satılık ve kiralık emlak ilanları portalı. Emlakçı ilanlarını otomatik filtreler, sadece gerçek sahiplerinden ilanları gösterir.",
+  title: "EvSahip - Sahibinden Direkt Konya Emlak İlanları",
+  description: "Konya'da sahibinden satılık ve kiralık emlak ilanları. Emlakçı ilanları otomatik filtrelenir, sadece gerçek sahiplerinden ilanlar gösterilir.",
   manifest: "/manifest.json",
   themeColor: "#2563eb",
   keywords: ["emlak", "sahibinden", "satılık", "kiralık", "konya", "daire", "arsa", "villa"],
   openGraph: {
-    title: "Emlak Portal - Sahibinden Direkt İlanlar",
-    description: "Emlakçı filtrelemeli, sahibinden direkt emlak ilanları platformu",
+    title: "EvSahip - Sahibinden Direkt Konya Emlak İlanları",
+    description: "Konya'da sahibinden satılık ve kiralık emlak ilanları. Emlakçı ilanları otomatik filtrelenir, sadece gerçek sahiplerinden ilanlar gösterilir.",
     type: "website",
     locale: "tr_TR",
   },
