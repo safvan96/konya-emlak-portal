@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, Play } from "lucide-react";
 import { TableSkeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/toast";
 
 interface City {
   id: string;
@@ -24,6 +25,8 @@ export default function CitiesPage() {
   const [name, setName] = useState("");
   const [cityId, setCityId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [scraping, setScraping] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchCities().finally(() => setLoading(false));
@@ -45,6 +48,28 @@ export default function CitiesPage() {
     setCityId("");
     setShowForm(false);
     fetchCities();
+  }
+
+  async function scrapeCity(slug: string) {
+    setScraping(slug);
+    try {
+      const res = await fetch("/api/scraper", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ citySlug: slug, listingType: "SALE", maxPages: 3 }),
+      });
+      if (res.ok) {
+        toast(`${slug} scraping başlatıldı`, "success");
+        // Kiralık da başlat
+        await fetch("/api/scraper", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ citySlug: slug, listingType: "RENT", maxPages: 3 }),
+        });
+      }
+    } catch { /* */ }
+    setScraping(null);
+    setTimeout(fetchCities, 5000);
   }
 
   async function toggleCity(id: string, isActive: boolean) {
@@ -100,6 +125,7 @@ export default function CitiesPage() {
                 <TableHead>Sahibinden ID</TableHead>
                 <TableHead>İlan Sayısı</TableHead>
                 <TableHead>Durum</TableHead>
+                <TableHead>İşlem</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -115,6 +141,19 @@ export default function CitiesPage() {
                         {city.isActive ? "Aktif" : "Pasif"}
                       </Badge>
                     </button>
+                  </TableCell>
+                  <TableCell>
+                    {city.isActive && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => scrapeCity(city.slug)}
+                        disabled={scraping === city.slug}
+                      >
+                        <Play className="h-3 w-3 mr-1" />
+                        {scraping === city.slug ? "Taranıyor..." : "Tara"}
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
