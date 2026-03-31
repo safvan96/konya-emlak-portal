@@ -33,6 +33,7 @@ export async function GET() {
     lastScrape,
     recentLogs,
     newListingsSinceLogin,
+    recentListings,
     priceDrops,
   ] = await Promise.all([
     prisma.listing.count(),
@@ -52,6 +53,13 @@ export async function GET() {
     // Son giristen beri yeni ilanlar
     prisma.listing.count({
       where: { createdAt: { gte: sinceLastLogin }, isFromOwner: true },
+    }),
+    // Son eklenen 5 ilan
+    prisma.listing.findMany({
+      where: { isFromOwner: true, status: "ACTIVE" },
+      select: { id: true, title: true, price: true, sellerPhone: true, district: true, roomCount: true, createdAt: true, sourceUrl: true },
+      orderBy: { createdAt: "desc" },
+      take: 5,
     }),
     // Son 7 gundeki fiyat dususleri
     prisma.priceHistory.findMany({
@@ -78,6 +86,7 @@ export async function GET() {
     lastScrape,
     recentLogs,
     newListingsSinceLogin,
+    recentListings,
     priceDrops: priceDrops.filter((p) => p.newPrice !== null && p.oldPrice !== null && p.newPrice < p.oldPrice),
   });
 }

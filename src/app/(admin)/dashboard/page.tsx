@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Users, Link2, Bot, Heart, CalendarCheck, TrendingDown, Sparkles } from "lucide-react";
+import { Building2, Users, Link2, Bot, Heart, CalendarCheck, TrendingDown, Sparkles, Home } from "lucide-react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice } from "@/lib/utils";
@@ -20,6 +20,7 @@ interface Stats {
   lastScrape: { startedAt: string; status: string; accepted: number; rejected: number } | null;
   recentLogs: { id: string; action: string; details: string | null; createdAt: string; user: { name: string; surname: string } }[];
   newListingsSinceLogin: number;
+  recentListings?: Array<{ id: string; title: string; price: number | null; sellerPhone: string | null; district: string | null; roomCount: string | null; createdAt: string; sourceUrl: string }>;
   priceDrops: Array<{ oldPrice: number; newPrice: number; changedAt: string; listing: { id: string; title: string; city: { name: string } } }>;
 }
 
@@ -168,6 +169,41 @@ export default function DashboardPage() {
           </Card>
         )}
       </div>
+
+      {/* Son Eklenen İlanlar */}
+      {stats.recentListings && stats.recentListings.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Home className="h-5 w-5" />
+              Son Eklenen İlanlar
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {stats.recentListings.map((l) => (
+                <div key={l.id} className="flex items-center justify-between border-b border-[var(--border)] pb-2 last:border-0">
+                  <div className="min-w-0 flex-1">
+                    <Link href={`/listings/${l.id}`} className="font-medium text-sm hover:text-[var(--primary)] hover:underline">
+                      {l.title}
+                    </Link>
+                    <div className="flex items-center gap-3 text-xs text-[var(--muted-foreground)] mt-1">
+                      {l.roomCount && <span>{l.roomCount}</span>}
+                      {l.district && <span className="capitalize">{l.district}</span>}
+                      {l.sellerPhone && (
+                        <a href={`tel:${l.sellerPhone}`} className="text-green-600 font-mono hover:underline">{l.sellerPhone}</a>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-sm font-bold text-[var(--primary)] whitespace-nowrap ml-4">
+                    {l.price ? formatPrice(l.price) : "-"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
