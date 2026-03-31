@@ -44,6 +44,7 @@ interface EmlakjetListing {
   emlakjetId: string;
   url: string;
   title: string;
+  originalTitle: string;
   description: string;
   price: number | null;
   currency: string;
@@ -83,14 +84,13 @@ function parseDetailPage(html: string, url: string): EmlakjetListing | null {
       if (!fields[m[1]]) fields[m[1]] = m[2];
     }
 
-    // Başlık - title tag'inden
+    // Başlık - title tag'inden (orijinal - filtreleme için)
     const titleMatch = html.match(/<title>([^<]+)/);
-    let title = titleMatch ? titleMatch[1].replace(/\s*\|.*$/, "").replace(/\s*#\d+$/, "").trim() : "";
-    // Emlakjet prefix'ini kaldır
-    title = title.replace(/^Emlakjet\s*-?\s*/i, "").trim();
-    // Başlığı temizle: satıcı adı + fiyat kaldır
-    title = title.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-    title = title.replace(/\s+[\d,.]+\s*TL\s*$/i, ""); // Sondaki fiyat
+    const originalTitle = titleMatch ? titleMatch[1].replace(/\s*\|.*$/, "").replace(/\s*#\d+$/, "").replace(/^Emlakjet\s*-?\s*/i, "").trim() : "";
+
+    // Başlığı temizle (gösterim için)
+    let title = originalTitle.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    title = title.replace(/\s+[\d,.]+\s*TL\s*$/i, "");
     const cityNames = ["Konya", "Ankara", "İstanbul", "İzmir", "Bursa", "Antalya", "Adana", "Gaziantep", "Kayseri", "Mersin"];
     for (const cn of cityNames) {
       const idx = title.indexOf(cn);
@@ -143,6 +143,7 @@ function parseDetailPage(html: string, url: string): EmlakjetListing | null {
       emlakjetId,
       url: `https://www.emlakjet.com${url}`,
       title,
+      originalTitle,
       description: description.substring(0, 5000),
       price,
       currency,
@@ -296,11 +297,11 @@ export async function scrapeEmlakjet(
           continue;
         }
 
-        // Emlakçı filtresi (title da taranır - Emlakjet'de satıcı adı başlıkta)
+        // Emlakçı filtresi - orijinal başlık + açıklama + satıcı adı hepsi taranır
         const filterResult = await filterListing(
           listing.description,
           listing.sellerName ?? undefined,
-          listing.title
+          listing.originalTitle
         );
 
         // Benzer ilan tespiti
