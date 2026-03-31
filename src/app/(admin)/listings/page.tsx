@@ -25,6 +25,8 @@ interface Listing {
   status: string;
   sourceUrl: string;
   sahibindenUrl: string | null;
+  sellerName: string | null;
+  sellerPhone: string | null;
   createdAt: string;
   city: { name: string };
   category: { name: string } | null;
@@ -323,6 +325,7 @@ export default function ListingsPage() {
                 </TableHead>
                 <TableHead>Başlık</TableHead>
                 <TableHead>Fiyat</TableHead>
+                <TableHead>Telefon</TableHead>
                 <TableHead>Şehir</TableHead>
                 <TableHead>Kategori</TableHead>
                 <TableHead>Kaynak</TableHead>
@@ -349,6 +352,13 @@ export default function ListingsPage() {
                     </Link>
                   </TableCell>
                   <TableCell>{formatPrice(listing.price)}</TableCell>
+                  <TableCell>
+                    {listing.sellerPhone ? (
+                      <a href={`tel:${listing.sellerPhone}`} className="text-xs font-mono text-green-700 hover:underline">
+                        {listing.sellerPhone}
+                      </a>
+                    ) : "-"}
+                  </TableCell>
                   <TableCell>{listing.city.name}</TableCell>
                   <TableCell>{listing.category?.name || "-"}</TableCell>
                   <TableCell>
