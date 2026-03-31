@@ -43,6 +43,8 @@ interface Listing {
   imageUrls: string[];
   sourceUrl: string;
   sahibindenUrl: string | null;
+  sellerName: string | null;
+  sellerPhone: string | null;
   isFromOwner: boolean;
   rejectionReason: string | null;
   status: string;
@@ -261,6 +263,20 @@ export default function ListingDetailPage() {
                 )}
                 {listing.category && <Badge variant="outline">{listing.category.name}</Badge>}
               </div>
+              {/* İlan Sahibi Bilgileri */}
+              {(listing.sellerName || listing.sellerPhone) && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-1">
+                  <p className="text-xs font-medium text-green-800">İlan Sahibi</p>
+                  {listing.sellerName && (
+                    <p className="text-sm font-semibold">{listing.sellerName}</p>
+                  )}
+                  {listing.sellerPhone && (
+                    <a href={`tel:${listing.sellerPhone}`} className="text-sm text-green-700 font-mono hover:underline">
+                      {listing.sellerPhone}
+                    </a>
+                  )}
+                </div>
+              )}
               {listing.rejectionReason && (
                 <p className="text-xs text-red-600 bg-red-50 rounded p-2">
                   Red sebebi: {listing.rejectionReason}
