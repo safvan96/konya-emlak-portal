@@ -26,14 +26,14 @@ export async function GET(req: NextRequest) {
     take: 10000,
   });
 
-  const header = "Başlık,Fiyat,Şehir,İlçe,Kategori,Tip,Kaynak,Durum,Oda,m²,Atama,Tarih,Sahibinden URL";
+  const header = "Başlık,Fiyat,Telefon,İlan Sahibi,Şehir,İlçe,Kategori,Tip,Kaynak,Durum,Oda,m²,Atama,Tarih,Emlakjet URL,Sahibinden URL";
   const rows = listings.map((l) => {
     const title = l.title.replace(/"/g, '""');
     const price = l.price ? String(l.price) : "";
     const type = l.listingType === "SALE" ? "Satılık" : "Kiralık";
     const source = l.isFromOwner ? "Sahibinden" : "Emlakçı";
     const date = new Date(l.createdAt).toLocaleDateString("tr-TR");
-    return `"${title}","${price}","${l.city.name}","${l.district || ""}","${l.category?.name || ""}","${type}","${source}","${l.status}","${l.roomCount || ""}","${l.squareMeters || ""}","${l._count.assignments}","${date}","${l.sourceUrl}"`;
+    return `"${title}","${price}","${l.sellerPhone || ""}","${l.sellerName || ""}","${l.city.name}","${l.district || ""}","${l.category?.name || ""}","${type}","${source}","${l.status}","${l.roomCount || ""}","${l.squareMeters || ""}","${l._count.assignments}","${date}","${l.sourceUrl}","${l.sahibindenUrl || ""}"`;
   });
 
   const csv = "\uFEFF" + [header, ...rows].join("\n"); // BOM for Turkish chars in Excel
