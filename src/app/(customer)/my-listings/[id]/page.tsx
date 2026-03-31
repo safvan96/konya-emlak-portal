@@ -21,6 +21,7 @@ import {
   Share2,
   Copy,
   Check,
+  Phone,
 } from "lucide-react";
 
 interface Listing {
@@ -40,6 +41,8 @@ interface Listing {
   imageUrls: string[];
   sourceUrl: string;
   sahibindenUrl: string | null;
+  sellerName: string | null;
+  sellerPhone: string | null;
   createdAt: string;
   city: { name: string };
   category: { name: string } | null;
@@ -246,6 +249,29 @@ export default function ListingDetailPage() {
             </CardContent>
           </Card>
 
+          {/* İlan Sahibi - Telefon */}
+          {listing.sellerPhone && (
+            <a
+              href={`tel:${listing.sellerPhone}`}
+              className="flex items-center justify-center gap-2 rounded-md bg-green-600 px-4 py-3 text-sm font-bold text-white hover:bg-green-700 transition-colors"
+            >
+              <Phone className="h-5 w-5" /> {listing.sellerPhone}
+            </a>
+          )}
+
+          {/* WhatsApp */}
+          {listing.sellerPhone && (
+            <a
+              href={`https://wa.me/90${listing.sellerPhone.replace(/^0/, "")}?text=${encodeURIComponent(`Merhaba, ${listing.title} ilanınız hakkında bilgi almak istiyorum.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-md bg-[#25D366] px-4 py-3 text-sm font-bold text-white hover:opacity-90 transition-colors"
+            >
+              WhatsApp ile Yaz
+            </a>
+          )}
+
+          {/* Kaynak Linkler */}
           <div className="grid grid-cols-2 gap-2">
             <a
               href={listing.sourceUrl}
