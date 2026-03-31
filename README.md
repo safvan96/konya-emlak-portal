@@ -5,11 +5,12 @@ Sahibinden.com'dan emlak ilanlarini otomatik tarayan, emlakci/danisma ilanlarini
 ## Ozellikler
 
 **Scraping & Filtreleme:**
-- Sahibinden.com otomatik ilan tarama (Puppeteer, cron 08:00/20:00)
-- Akilli emlakci filtreleme (blacklist kelimeler, regex, telefon pattern, URL tespiti)
-- Fiyat degisim takibi (eski/yeni fiyat gecmisi)
-- Benzer ilan duplicate tespiti
-- Cookie consent otomatik bypass, retry logic, User-Agent rotation
+- Emlakjet.com + Sahibinden.com otomatik ilan tarama (cron 08:00/20:00)
+- Sadece "sahibinden" (gercek sahip) ilanlari cekilir - emlakci ilanlari kaynakta filtrelenir
+- Her ilana telefon numarasi ve ilan sahibi adi otomatik eklenir
+- Akilli emlakci filtreleme (blacklist, regex, Unicode normalize, baslik+aciklama tarama)
+- Fiyat degisim takibi, benzer ilan duplicate tespiti
+- 4 scraper modu: Emlakjet (varsayilan), ScraperAPI, HTTP, Puppeteer
 
 **Admin Paneli (11 sayfa):**
 - Dashboard (istatistikler, yeni ilan bildirimi, fiyat dusus alarmlari)
@@ -33,8 +34,10 @@ Sahibinden.com'dan emlak ilanlarini otomatik tarayan, emlakci/danisma ilanlarini
 - Dark/Light tema, PWA (offline destegi, service worker)
 - Klavye kisayollari (G+D dashboard, G+L ilanlar vb.)
 - Toast bildirimleri, skeleton loading, mobil responsive
-- Zod validation, rate limiting, IP loglama, 44 test
-- Docker multi-stage + Nginx + PM2 + GitHub Actions CI/CD
+- Musteri ilan detayda telefon ara + WhatsApp ile yaz butonlari
+- Her ilanda Emlakjet (kaynak) + Sahibinden (arama) cift link
+- Zod validation, rate limiting, IP loglama, 61 test
+- PM2 production, gunluk backup (03:00), Nginx + GitHub Actions CI/CD
 
 ## Teknolojiler
 
@@ -42,10 +45,10 @@ Sahibinden.com'dan emlak ilanlarini otomatik tarayan, emlakci/danisma ilanlarini
 - **Backend:** Next.js API Routes, Prisma ORM
 - **Veritabani:** PostgreSQL (11 model)
 - **Auth:** NextAuth.js (JWT, Credentials, role-based)
-- **Scraping:** Puppeteer, node-cron
+- **Scraping:** Emlakjet + Puppeteer + ScraperAPI, node-cron
 - **Validation:** Zod
-- **Test:** Vitest (44 test)
-- **Deployment:** Docker, Nginx, PM2, GitHub Actions
+- **Test:** Vitest (61 test)
+- **Deployment:** PM2, Nginx, Docker, GitHub Actions
 
 ## Kurulum
 
@@ -83,8 +86,8 @@ npm run test:watch  # izleme modu
 
 | Rol | Email | Sifre |
 |-----|-------|-------|
-| Admin | admin@emlakportal.com | admin123 |
-| Musteri | musteri@emlakportal.com | musteri123 |
+| Admin | admin@emlakportal.com | admin123 (ilk kurulumda degistirin) |
+| Musteri | musteri@test.com | test123 |
 
 ## API Endpointleri (26)
 
@@ -138,7 +141,7 @@ src/
 │   ├── shared/        # Auth, theme, keyboard, SW
 │   └── ui/            # Badge, Button, Card, Input, Select, Skeleton, Table, Toast, ImageFallback
 ├── lib/
-│   ├── scraper/       # Sahibinden scraper, filter, scheduler
+│   ├── scraper/       # Emlakjet + Sahibinden scraper, filter, scheduler
 │   ├── auth.ts        # NextAuth config
 │   ├── auto-assign.ts # Otomatik atama
 │   ├── log.ts         # Loglama
@@ -148,7 +151,7 @@ src/
 │   └── validations.ts # Zod semalari
 ├── types/             # TypeScript tanimlari
 └── middleware.ts       # Auth + role + IP middleware
-tests/                  # 44 test (4 dosya)
+tests/                  # 61 test (5 dosya)
 ```
 
 ## Lisans
