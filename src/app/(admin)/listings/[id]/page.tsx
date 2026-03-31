@@ -42,6 +42,7 @@ interface Listing {
   floor: string | null;
   imageUrls: string[];
   sourceUrl: string;
+  sahibindenUrl: string | null;
   isFromOwner: boolean;
   rejectionReason: string | null;
   status: string;
@@ -136,10 +137,20 @@ export default function ListingDetailPage() {
             href={listing.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline"
+            className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
           >
-            <ExternalLink className="h-4 w-4" /> Sahibinden
+            <ExternalLink className="h-4 w-4" /> Emlakjet
           </a>
+          {listing.sahibindenUrl && (
+            <a
+              href={listing.sahibindenUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-sm text-orange-600 hover:underline"
+            >
+              <ExternalLink className="h-4 w-4" /> Sahibinden
+            </a>
+          )}
         </div>
       </div>
 

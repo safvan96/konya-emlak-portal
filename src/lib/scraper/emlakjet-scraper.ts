@@ -21,6 +21,25 @@ const HEADERS = {
   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 };
 
+function buildSahibindenUrl(title: string, listingType: string, citySlug: string, district: string | null): string {
+  const type = listingType === "SALE" ? "satilik" : "kiralik";
+  const t = title.toLowerCase();
+  let cat = "daire";
+  if (t.includes("arsa") || t.includes("tarla")) cat = "arsa";
+  else if (t.includes("villa")) cat = "villa";
+  else if (t.includes("müstakil") || t.includes("mustakil")) cat = "mustakil-ev";
+  else if (t.includes("dükkan") || t.includes("dukkan")) cat = "dukkan-magaza";
+  else if (t.includes("ofis")) cat = "ofis-is-yeri";
+  else if (t.includes("depo")) cat = "depo-antrepo";
+  else if (t.includes("bina")) cat = "bina";
+  let url = `https://www.sahibinden.com/${type}-${cat}/${citySlug}`;
+  if (district) {
+    const slug = district.toLowerCase().replace(/ş/g,"s").replace(/ç/g,"c").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ö/g,"o").replace(/ı/g,"i").replace(/İ/g,"i").replace(/\s+/g,"-");
+    url += `-${slug}`;
+  }
+  return url;
+}
+
 interface EmlakjetListing {
   emlakjetId: string;
   url: string;
@@ -318,6 +337,7 @@ export async function scrapeEmlakjet(
             floor: listing.floor,
             imageUrls: listing.imageUrls,
             sourceUrl: listing.url,
+            sahibindenUrl: buildSahibindenUrl(listing.title, listingType, city.slug, listing.district),
             isFromOwner: filterResult.isFromOwner,
             rejectionReason: filterResult.rejectionReason,
             status: filterResult.isFromOwner ? "ACTIVE" : "PASSIVE",

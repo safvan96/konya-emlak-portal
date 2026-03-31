@@ -24,6 +24,7 @@ interface Listing {
   rejectionReason: string | null;
   status: string;
   sourceUrl: string;
+  sahibindenUrl: string | null;
   createdAt: string;
   city: { name: string };
   category: { name: string } | null;
@@ -388,10 +389,22 @@ export default function ListingsPage() {
                         href={listing.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1 hover:bg-[var(--accent)] rounded"
+                        className="p-1 hover:bg-blue-50 rounded text-blue-600"
+                        title="Emlakjet"
                       >
                         <ExternalLink className="h-4 w-4" />
                       </a>
+                      {listing.sahibindenUrl && (
+                        <a
+                          href={listing.sahibindenUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1 hover:bg-orange-50 rounded text-orange-600"
+                          title="Sahibinden"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
                       <button
                         onClick={() => deleteListing(listing.id)}
                         className="p-1 hover:bg-red-50 rounded text-red-500"

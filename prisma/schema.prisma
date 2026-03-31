@@ -83,6 +83,7 @@ model Listing {
   floor           String?
   imageUrls       String[]
   sourceUrl       String
+  sahibindenUrl   String?
   isFromOwner     Boolean       @default(true)
   rejectionReason String?
   status          ListingStatus @default(ACTIVE)
