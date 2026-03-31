@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { smartScrape } from "@/lib/scraper/sahibinden";
+import { runBot } from "@/lib/scraper/bot";
 import { createLog } from "@/lib/log";
 import { scraperTriggerSchema, validateBody } from "@/lib/validations";
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   );
 
   // Async olarak başlat - response'u hemen dön
-  smartScrape(citySlug, listingType, maxPages).catch((err) => {
+  runBot(citySlug, listingType, maxPages).catch((err) => {
     console.error("Scraper hata:", err);
   });
 
