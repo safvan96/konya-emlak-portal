@@ -21,22 +21,31 @@ const HEADERS = {
   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 };
 
-function buildSahibindenUrl(title: string, listingType: string, citySlug: string, district: string | null): string {
+const KONYA_DISTRICTS: Record<string, string> = {
+  "selçuklu":"selcuklu","selcuklu":"selcuklu","meram":"meram","karatay":"karatay",
+  "beyşehir":"beysehir","beysehir":"beysehir","akşehir":"aksehir","aksehir":"aksehir",
+  "ereğli":"eregli","eregli":"eregli","seydişehir":"seydisehir","seydisehir":"seydisehir",
+  "cihanbeyli":"cihanbeyli","çumra":"cumra","cumra":"cumra","ilgın":"ilgin","ilgin":"ilgin",
+  "kulu":"kulu","bozkır":"bozkir","hadim":"hadim","sarayönü":"sarayonu","derebucak":"derebucak",
+  "emirgazi":"emirgazi","akören":"akoren","halkapınar":"halkapinar","altınekin":"altinekin",
+  "tuzlukçu":"tuzlukcu","yunak":"yunak","kadınhanı":"kadinhani",
+};
+
+function buildSahibindenUrl(title: string, listingType: string, citySlug: string, _district: string | null): string {
   const type = listingType === "SALE" ? "satilik" : "kiralik";
   const t = title.toLowerCase();
   let cat = "daire";
-  if (t.includes("arsa") || t.includes("tarla")) cat = "arsa";
+  if (t.includes("arsa") || t.includes("tarla") || t.includes("imarlı") || t.includes("bağ")) cat = "arsa";
   else if (t.includes("villa")) cat = "villa";
-  else if (t.includes("müstakil") || t.includes("mustakil")) cat = "mustakil-ev";
+  else if (t.includes("müstakil") || t.includes("mustakil") || t.includes("köy evi") || t.includes("çiftlik")) cat = "mustakil-ev";
   else if (t.includes("dükkan") || t.includes("dukkan")) cat = "dukkan-magaza";
   else if (t.includes("ofis")) cat = "ofis-is-yeri";
   else if (t.includes("depo")) cat = "depo-antrepo";
-  else if (t.includes("bina")) cat = "bina";
   let url = `https://www.sahibinden.com/${type}-${cat}/${citySlug}`;
-  if (district) {
-    const slug = district.toLowerCase().replace(/ş/g,"s").replace(/ç/g,"c").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ö/g,"o").replace(/ı/g,"i").replace(/İ/g,"i").replace(/\s+/g,"-");
-    url += `-${slug}`;
-  }
+  // İlçe - başlığın ilk kelimesinden
+  const firstWord = title.split(" ")[0].toLowerCase();
+  const slug = KONYA_DISTRICTS[firstWord];
+  if (slug) url += `-${slug}`;
   return url;
 }
 
