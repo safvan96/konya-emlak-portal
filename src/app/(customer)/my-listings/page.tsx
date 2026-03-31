@@ -245,15 +245,9 @@ export default function MyListingsPage() {
                 )}
                 <div className="flex gap-3 mt-2">
                   <a href={a.listing.sourceUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
-                    <ExternalLink className="h-3 w-3" /> Emlakjet
+                    className="flex items-center gap-1 text-xs font-medium text-[var(--primary)] hover:underline">
+                    <ExternalLink className="h-3 w-3" /> İlana Git
                   </a>
-                  {a.listing.sahibindenUrl && (
-                    <a href={a.listing.sahibindenUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs text-orange-600 hover:underline">
-                      <ExternalLink className="h-3 w-3" /> Sahibinden
-                    </a>
-                  )}
                 </div>
               </CardContent>
             </Card>

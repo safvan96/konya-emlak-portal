@@ -139,20 +139,10 @@ export default function ListingDetailPage() {
             href={listing.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+            className="flex items-center gap-1 text-sm font-medium text-[var(--primary)] hover:underline"
           >
-            <ExternalLink className="h-4 w-4" /> Emlakjet
+            <ExternalLink className="h-4 w-4" /> İlana Git
           </a>
-          {listing.sahibindenUrl && (
-            <a
-              href={listing.sahibindenUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm text-orange-600 hover:underline"
-            >
-              <ExternalLink className="h-4 w-4" /> Sahibinden
-            </a>
-          )}
         </div>
       </div>
 

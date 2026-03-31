@@ -271,27 +271,15 @@ export default function ListingDetailPage() {
             </a>
           )}
 
-          {/* Kaynak Linkler */}
-          <div className="grid grid-cols-2 gap-2">
-            <a
-              href={listing.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors"
-            >
-              <ExternalLink className="h-4 w-4" /> Emlakjet
-            </a>
-            {listing.sahibindenUrl && (
-              <a
-                href={listing.sahibindenUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-md border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-medium text-orange-700 hover:bg-orange-100 transition-colors"
-              >
-                <ExternalLink className="h-4 w-4" /> Sahibinden
-              </a>
-            )}
-          </div>
+          {/* Kaynak Link */}
+          <a
+            href={listing.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 rounded-md bg-[var(--primary)] px-4 py-3 text-sm font-medium text-[var(--primary-foreground)] hover:opacity-90 transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" /> İlana Git
+          </a>
         </div>
       </div>
     </div>

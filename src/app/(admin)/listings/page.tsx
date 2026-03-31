@@ -421,22 +421,11 @@ export default function ListingsPage() {
                         href={listing.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1 hover:bg-blue-50 rounded text-blue-600"
-                        title="Emlakjet"
+                        className="p-1 hover:bg-[var(--primary)]/10 rounded text-[var(--primary)]"
+                        title="İlana Git"
                       >
                         <ExternalLink className="h-4 w-4" />
                       </a>
-                      {listing.sahibindenUrl && (
-                        <a
-                          href={listing.sahibindenUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1 hover:bg-orange-50 rounded text-orange-600"
-                          title="Sahibinden"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
                       <button
                         onClick={() => deleteListing(listing.id)}
                         className="p-1 hover:bg-red-50 rounded text-red-500"
