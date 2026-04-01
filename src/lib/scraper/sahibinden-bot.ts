@@ -53,17 +53,24 @@ async function login(page: Page): Promise<boolean> {
     if (i === 5) { console.error("Login sayfası yüklenemedi"); return false; }
   }
 
+  // Cookie banner kapat
+  await page.click("#onetrust-accept-btn-handler").catch(() => {});
+  await delay(1000, 2000);
+
   // Email gir
-  await page.waitForSelector('input[type="email"], input[name="username"]', { timeout: 10000 });
-  await page.type('input[type="email"], input[name="username"]', email, { delay: 80 + Math.random() * 40 });
+  await page.waitForSelector("#username", { timeout: 10000 });
+  await page.click("#username");
+  await page.type("#username", email, { delay: 80 + Math.random() * 40 });
   await delay(1000, 2000);
 
   // Şifre gir
-  await page.type('input[type="password"], input[name="password"]', password, { delay: 80 + Math.random() * 40 });
+  await page.click("#password");
+  await page.type("#password", password, { delay: 80 + Math.random() * 40 });
   await delay(1000, 2000);
 
   // Giriş yap
-  await page.click('button[type="submit"]');
+  await page.click("#userLoginSubmitButton");
+  await delay(5000, 8000);
   await page.waitForNavigation({ waitUntil: "networkidle2", timeout: 15000 }).catch(() => {});
 
   const url = page.url();
