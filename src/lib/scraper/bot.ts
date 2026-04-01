@@ -281,9 +281,12 @@ export async function runBot(
     console.log(`\n=== EvSahip Bot: ${city.name} ${typeSlug} ===\n`);
 
     // 1. ADIM: Tüm sayfalarda ilan URL'lerini topla
+    // sahibinden filtresi varsa ekle, yoksa tüm ilanlar
+    const ownerFilter = process.env.ONLY_OWNER === "true" ? "/sahibinden" : "";
+
     for (const cat of categories) {
       for (let page = 1; page <= maxPages; page++) {
-        const url = `https://www.emlakjet.com/${typeSlug}-${cat}/${citySlug}/sahibinden${page > 1 ? `?page=${page}` : ""}`;
+        const url = `https://www.emlakjet.com/${typeSlug}-${cat}/${citySlug}${ownerFilter}${page > 1 ? `?page=${page}` : ""}`;
         try {
           const resp = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(15000) });
           if (!resp.ok) break;
