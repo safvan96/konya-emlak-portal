@@ -189,24 +189,35 @@ function parseDetailPage(html: string, url: string): EmlakjetListing | null {
   }
 }
 
-async function guessCategory(title: string): Promise<string | null> {
-  const lowerTitle = title.toLowerCase();
-  const categoryMap: Record<string, string> = {
-    villa: "villa", arsa: "arsa", tarla: "tarla",
-    "dükkan": "dukkan", dukkan: "dukkan", ofis: "ofis",
-    depo: "depo", bina: "bina", "müstakil": "mustakil-ev",
-    mustakil: "mustakil-ev", residans: "residans",
-    "devremülk": "devremulk", devremulk: "devremulk",
-    kooperatif: "kooperatif", daire: "daire",
-    dubleks: "daire", dublex: "daire",
+// Kategori tahmini — spesifikten genele (bot.ts ile aynı mantık)
+async function guessCategory(title: string, roomCount?: string | null): Promise<string | null> {
+  // Türkçe karakterleri normalize et
+  const normMap: Record<string, string> = {
+    "ç": "c", "ğ": "g", "ı": "i", "ö": "o", "ş": "s", "ü": "u",
+    "Ç": "c", "Ğ": "g", "İ": "i", "Ö": "o", "Ş": "s", "Ü": "u",
   };
+  const t = title.toLowerCase().replace(/[^\x00-\x7F]/g, (c) => normMap[c] || c);
+  const hasRoom = /\d\s*\+\s*\d/.test(title) || !!roomCount;
 
-  for (const [keyword, slug] of Object.entries(categoryMap)) {
-    if (lowerTitle.includes(keyword)) {
-      const category = await prisma.category.findUnique({ where: { slug } });
-      return category?.id || null;
-    }
-  }
+  let slug: string | null = null;
+  if (/\bdevremulk\b/.test(t)) slug = "devremulk";
+  else if (/\bresidans\b|\brezidans\b/.test(t)) slug = "residans";
+  else if (/\bciftlik\s*evi\b|\bciftlik\b/.test(t)) slug = "ciftlik-evi";
+  else if (/\bvilla\b/.test(t)) slug = "villa";
+  else if (/\bmustakil\b|\bkoy\s*evi\b|\bdubleks\b|\btripleks\b/.test(t)) slug = "mustakil-ev";
+  else if (/\bkooperatif\b|\bkooparatif\b/.test(t)) slug = "kooperatif";
+  else if (/\bbina\b/.test(t) && !hasRoom) slug = "bina";
+  else if (/\bofis\b|\bis\s*yeri\b/.test(t)) slug = "ofis";
+  else if (/\bdukkan\b/.test(t)) slug = "dukkan";
+  else if (/\bdepo\b|\bantrepo\b/.test(t)) slug = "depo";
+  else if (/\btarla\b|\bbag\b|\bbahce\b/.test(t)) slug = "tarla";
+  else if (hasRoom && !/^\s*arsa\b|^\s*satilik\s+arsa\b/.test(t)) slug = "daire";
+  else if (/\bdaire\b/.test(t)) slug = "daire";
+  else if (/\barsa\b/.test(t) && !/arsali|arsa\s+uzeri|arsa\s+cephe/.test(t)) slug = "arsa";
+  else slug = "daire";
+
+  const cat = await prisma.category.findUnique({ where: { slug } });
+  if (cat) return cat.id;
   const daire = await prisma.category.findUnique({ where: { slug: "daire" } });
   return daire?.id || null;
 }
@@ -346,7 +357,7 @@ export async function scrapeEmlakjet(
           }
         }
 
-        const categoryId = await guessCategory(listing.title);
+        const categoryId = await guessCategory(listing.title, listing.roomCount);
 
         await prisma.listing.create({
           data: {

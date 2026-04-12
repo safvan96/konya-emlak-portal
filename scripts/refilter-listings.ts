@@ -17,6 +17,7 @@ async function main() {
   let changed = 0;
   let nowRejected = 0;
   let nowAccepted = 0;
+  let orphanAssignmentsDeleted = 0;
 
   for (const listing of listings) {
     const result = await filterListing(listing.description, undefined, listing.title);
@@ -35,6 +36,11 @@ async function main() {
 
       if (!result.isFromOwner) {
         nowRejected++;
+        // Emlakçı'ya dönüştüğünde atamaları da sil (müşteriler yanlış ilan görmesin)
+        const deleted = await prisma.assignment.deleteMany({
+          where: { listingId: listing.id },
+        });
+        orphanAssignmentsDeleted += deleted.count;
         console.log(`  ✗ → PASIF: ${listing.title.substring(0, 70)}`);
         console.log(`    Sebep: ${result.rejectionReason}`);
       } else {
@@ -51,6 +57,7 @@ async function main() {
 
   console.log(`\n=== Sonuç ===`);
   console.log(`Değişen: ${changed} (${nowRejected} yeni red, ${nowAccepted} yeni kabul)`);
+  console.log(`Silinen orphan atama: ${orphanAssignmentsDeleted}`);
   console.log(`Güncel durum:`, stats.map(s => `${s.isFromOwner ? "Aktif" : "Pasif"}: ${s._count}`).join(", "));
 
   await prisma.$disconnect();

@@ -137,20 +137,31 @@ function buildSbUrl(title: string, type: string, citySlug: string): string {
   return url;
 }
 
-// Kategori tahmini
-async function guessCategory(title: string): Promise<string | null> {
+// Kategori tahmini — spesifikten genele, 13 kategori
+// Priority: ciftlik > villa > mustakil > kooperatif > bina > ofis > dukkan > depo > tarla > daire(+room) > arsa
+async function guessCategory(title: string, roomCount?: string | null): Promise<string | null> {
   const t = normalize(title);
-  const map: Record<string, string> = {
-    villa: "villa", arsa: "arsa", tarla: "tarla", daire: "daire",
-    mustakil: "mustakil-ev", dukkan: "dukkan", ofis: "ofis",
-    kooperatif: "kooperatif", bina: "bina", depo: "depo", ciftlik: "ciftlik-evi",
-  };
-  for (const [k, v] of Object.entries(map)) {
-    if (t.includes(k)) {
-      const cat = await prisma.category.findUnique({ where: { slug: v } });
-      return cat?.id || null;
-    }
-  }
+  const hasRoom = /\d\s*\+\s*\d/.test(title) || !!roomCount;
+
+  let slug: string | null = null;
+  if (/\bdevremulk\b/.test(t)) slug = "devremulk";
+  else if (/\bresidans\b|\brezidans\b/.test(t)) slug = "residans";
+  else if (/\bciftlik\s*evi\b|\bciftlik\b/.test(t)) slug = "ciftlik-evi";
+  else if (/\bvilla\b/.test(t)) slug = "villa";
+  else if (/\bmustakil\b|\bkoy\s*evi\b|\bdubleks\b|\btripleks\b/.test(t)) slug = "mustakil-ev";
+  else if (/\bkooperatif\b|\bkooparatif\b/.test(t)) slug = "kooperatif";
+  else if (/\bbina\b/.test(t) && !hasRoom) slug = "bina";
+  else if (/\bofis\b|\bis\s*yeri\b/.test(t)) slug = "ofis";
+  else if (/\bdukkan\b/.test(t)) slug = "dukkan";
+  else if (/\bdepo\b|\bantrepo\b/.test(t)) slug = "depo";
+  else if (/\btarla\b|\bbag\b|\bbahce\b/.test(t)) slug = "tarla";
+  else if (hasRoom && !/^\s*arsa\b|^\s*satilik\s+arsa\b/.test(t)) slug = "daire";
+  else if (/\bdaire\b/.test(t)) slug = "daire";
+  else if (/\barsa\b/.test(t) && !/arsali|arsa\s+uzeri|arsa\s+cephe/.test(t)) slug = "arsa";
+  else slug = "daire";
+
+  const cat = await prisma.category.findUnique({ where: { slug } });
+  if (cat) return cat.id;
   const daire = await prisma.category.findUnique({ where: { slug: "daire" } });
   return daire?.id || null;
 }
@@ -329,7 +340,7 @@ export async function runBot(
 
         // BOT FİLTRE - agresif emlakçı tespiti
         const filter = botFilter(listing.description, listing.originalTitle, listing.sellerName);
-        const categoryId = await guessCategory(listing.title);
+        const categoryId = await guessCategory(listing.title, listing.roomCount);
 
         await prisma.listing.create({
           data: {
