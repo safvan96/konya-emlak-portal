@@ -32,7 +32,7 @@ export async function runScraperForAllCities() {
 
       try {
         // Satılık
-        const saleResult = await runBot(city.slug, "SALE", 3);
+        const saleResult = await runBot(city.slug, "SALE", 5);
         console.log(`${city.name} satılık sonuç:`, saleResult);
       } catch (err) {
         console.error(`${city.name} satılık hata:`, err);
@@ -40,7 +40,7 @@ export async function runScraperForAllCities() {
 
       try {
         // Kiralık
-        const rentResult = await runBot(city.slug, "RENT", 3);
+        const rentResult = await runBot(city.slug, "RENT", 5);
         console.log(`${city.name} kiralık sonuç:`, rentResult);
       } catch (err) {
         console.error(`${city.name} kiralık hata:`, err);
