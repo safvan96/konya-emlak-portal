@@ -116,7 +116,7 @@ async function main() {
             document.querySelectorAll('*').forEach(el => { if (price) return; const t = el.textContent?.trim()||''; if (t.match(/^\s*[\d.]+\s*TL\s*$/)||t.match(/^\s*[\d.]+\s*₺/)) { const n=parseInt(t.replace(/[^0-9]/g,'')); if(n>10000) price=n; } });
             const bodyText = document.body.innerText;
             if (!price) { const pm=bodyText.match(/([\d.]+)\s*TL/); if(pm){const n=parseInt(pm[1].replace(/\./g,'')); if(n>10000)price=n;} }
-            const breadcrumbs = Array.from(document.querySelectorAll('a')).filter(a=>a.href.includes('/konya')&&!a.href.includes('/en/')).map(a=>a.textContent?.trim()).filter(t=>t&&t.length<30&&t.toLowerCase()!=='english'&&t.toLowerCase()!=='koyler');
+            const breadcrumbs = Array.from(document.querySelectorAll('a')).filter(a=>a.href.includes('/konya')&&!a.href.includes('/en/')).map(a=>a.textContent?.trim()).filter(t=>t&&t.length<30&&t.toLowerCase()!=='english'&&t.toLowerCase()!=='koyler'&&t!=='Русский');
             const location = breadcrumbs.slice(0,3).join(', ')||'Konya';
             const roomMatch = bodyText.match(/(\d\+\d)\s/);
             const sqmMatch = bodyText.match(/(\d+)\s*m²/);
