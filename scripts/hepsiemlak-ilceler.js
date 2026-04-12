@@ -64,19 +64,16 @@ async function main() {
   const topDistricts = ["selcuklu", "meram", "karatay"];
   const otherDistricts = ["eregli", "aksehir", "beysehir", "seydisehir", "cumra", "ilgin", "kulu", "cihanbeyli"];
 
-  // Top 3 ilçe × 4 tip × kiralık s.1-2
-  for (const d of topDistricts) {
-    for (const t of types) {
-      for (let i = 1; i <= 2; i++) pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-kiralik-${t}?page=${i}`, type: "RENT" });
-    }
+  // --- SADECE HENÜZ TARANMAMIŞ SAYFALAR ---
+  // Meram SALE villa+arsa (daire/mustakil zaten tarandı)
+  for (const t of ["villa", "arsa"]) {
+    for (let i = 1; i <= 2; i++) pages.push({ url: `https://www.hepsiemlak.com/konya-meram-satilik-${t}?page=${i}`, type: "SALE" });
   }
-  // Top 3 ilçe × 4 tip × satılık s.1-2
-  for (const d of topDistricts) {
-    for (const t of types) {
-      for (let i = 1; i <= 2; i++) pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-satilik-${t}?page=${i}`, type: "SALE" });
-    }
+  // Karatay SALE tümü (henüz taranmadı)
+  for (const t of types) {
+    for (let i = 1; i <= 2; i++) pages.push({ url: `https://www.hepsiemlak.com/konya-karatay-satilik-${t}?page=${i}`, type: "SALE" });
   }
-  // Diğer ilçeler × daire+arsa × satılık+kiralık s.1
+  // Diğer ilçeler × daire+arsa × satılık+kiralık (hiç taranmadı)
   for (const d of otherDistricts) {
     for (const t of ["daire", "arsa"]) {
       pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-satilik-${t}?page=1`, type: "SALE" });
