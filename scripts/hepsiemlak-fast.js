@@ -192,12 +192,14 @@ async function main() {
           const categoryId = await guessCategory(data.title);
           const district = data.location.split(',')[1]?.trim() || null;
 
+          const finalPrice = (listingType === 'RENT' && data.price && data.price > 500000) ? null : data.price;
+
           await prisma.listing.create({
             data: {
               sahibindenId: link.id,
               title: data.title.substring(0, 200),
               description: data.desc,
-              price: data.price,
+              price: finalPrice,
               currency: 'TL',
               listingType: listingType,
               location: data.location,

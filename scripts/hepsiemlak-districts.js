@@ -69,21 +69,27 @@ async function main() {
     pages.push({ url: `https://www.hepsiemlak.com/konya-kiralik?page=${i}`, type: "RENT" });
   }
 
-  // Top ilçe kiralık ilk 3 sayfa
+  // NOT: İlçe URL formatı TİP gerektirir: konya-selcuklu-kiralik-daire (sadece -kiralik → 404!)
+  const propertyTypes = ["daire", "mustakil-ev", "villa", "arsa"];
+  // Top ilçe kiralık
   for (const d of ["selcuklu", "meram", "karatay"]) {
-    for (let i = 1; i <= 3; i++) {
-      pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-kiralik?page=${i}`, type: "RENT" });
+    for (const t of propertyTypes) {
+      for (let i = 1; i <= 2; i++) pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-kiralik-${t}?page=${i}`, type: "RENT" });
     }
   }
-
-  // Diğer ilçe kiralık ilk sayfa
+  // Diğer ilçe kiralık daire
   for (const d of ["eregli", "aksehir", "beysehir", "seydisehir", "cumra", "ilgin", "kulu"]) {
-    pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-kiralik?page=1`, type: "RENT" });
+    pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-kiralik-daire?page=1`, type: "RENT" });
   }
-
-  // Top ilçe satılık ilk 2 sayfa (henüz derinlemesine taranmadı)
+  // Top ilçe satılık
+  for (const d of ["selcuklu", "meram", "karatay"]) {
+    for (const t of propertyTypes) {
+      pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-satilik-${t}?page=1`, type: "SALE" });
+    }
+  }
+  // Diğer ilçe satılık daire+arsa
   for (const d of ["cihanbeyli", "cumra", "ilgin", "kulu", "kadinhani", "sarayonu", "akoren"]) {
-    pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-satilik?page=1`, type: "SALE" });
+    for (const t of ["daire", "arsa"]) pages.push({ url: `https://www.hepsiemlak.com/konya-${d}-satilik-${t}?page=1`, type: "SALE" });
   }
 
   console.log(`Toplam ${pages.length} sayfa planlandı\n`);
@@ -194,12 +200,15 @@ async function main() {
           const categoryId = await guessCategory(data.title);
           const districtName = data.location.split(',')[1]?.trim() || null;
 
+          // Kiralıkta >500K TL mantıksız (satılık fiyat yakalanmış olabilir)
+          const finalPrice = (listingType === 'RENT' && data.price && data.price > 500000) ? null : data.price;
+
           await prisma.listing.create({
             data: {
               sahibindenId: link.id,
               title: data.title.substring(0, 200),
               description: data.desc,
-              price: data.price,
+              price: finalPrice,
               currency: 'TL',
               listingType: listingType,
               location: data.location,
