@@ -13,7 +13,7 @@ const navItems = [
   { href: "/my-listings", label: "İlanlarım", icon: Building2 },
   { href: "/map", label: "Harita", icon: Map },
   { href: "/favorites", label: "Favoriler", icon: Heart },
-  { href: "/history", label: "Gecmis", icon: Clock },
+  { href: "/history", label: "Geçmiş", icon: Clock },
   { href: "/notifications", label: "Bildirimler", icon: Bell },
   { href: "/preferences", label: "Tercihler", icon: Settings },
   { href: "/profile", label: "Profil", icon: User },

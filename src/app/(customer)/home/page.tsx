@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Heart, Bell, Eye } from "lucide-react";
+import { Building2, Heart, Bell, Eye, Map } from "lucide-react";
 import Link from "next/link";
 import { formatPrice, formatDate } from "@/lib/utils";
 
@@ -53,23 +53,34 @@ export default function CustomerDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Hosgeldiniz</h1>
+      <h1 className="text-3xl font-bold">Hoşgeldiniz</h1>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Link href="/my-listings">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
             <CardContent className="p-4 flex items-center gap-3">
               <Building2 className="h-8 w-8 text-[var(--primary)]" />
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-2xl font-bold">{data.totalAssigned}</p>
-                <p className="text-xs text-[var(--muted-foreground)]">Atanmis Ilan</p>
+                <p className="text-xs text-[var(--muted-foreground)]">Atanmış İlan</p>
               </div>
-              {data.unread > 0 && <Badge variant="destructive" className="ml-auto">{data.unread} yeni</Badge>}
+              {data.unread > 0 && <Badge variant="destructive" className="shrink-0">{data.unread} yeni</Badge>}
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/map">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardContent className="p-4 flex items-center gap-3">
+              <Map className="h-8 w-8 text-blue-500" />
+              <div>
+                <p className="text-sm font-bold">Harita</p>
+                <p className="text-xs text-[var(--muted-foreground)]">İlçe fiyatları</p>
+              </div>
             </CardContent>
           </Card>
         </Link>
         <Link href="/favorites">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
             <CardContent className="p-4 flex items-center gap-3">
               <Heart className="h-8 w-8 text-red-400" />
               <div>
@@ -80,7 +91,7 @@ export default function CustomerDashboard() {
           </Card>
         </Link>
         <Link href="/notifications">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
             <CardContent className="p-4 flex items-center gap-3">
               <Bell className="h-8 w-8 text-orange-400" />
               <div>
@@ -91,11 +102,12 @@ export default function CustomerDashboard() {
           </Card>
         </Link>
         <Link href="/history">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
             <CardContent className="p-4 flex items-center gap-3">
               <Eye className="h-8 w-8 text-[var(--muted-foreground)]" />
               <div>
-                <p className="text-xs text-[var(--muted-foreground)]">Goruntuleme Gecmisi</p>
+                <p className="text-sm font-bold">Geçmiş</p>
+                <p className="text-xs text-[var(--muted-foreground)]">Görüntülediğim</p>
               </div>
             </CardContent>
           </Card>
@@ -106,7 +118,7 @@ export default function CustomerDashboard() {
       {data.recentAssignments.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Son Atanan Ilanlar</CardTitle>
+            <CardTitle>Son Atanan İlanlar</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -118,7 +130,7 @@ export default function CustomerDashboard() {
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{a.listing.title}</p>
-                    <p className="text-xs text-[var(--muted-foreground)]">{a.listing.city.name} - {formatDate(a.assignedAt)}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">{a.listing.city.name} · {formatDate(a.assignedAt)}</p>
                   </div>
                   <span className="text-sm font-bold text-[var(--primary)] shrink-0 ml-3">
                     {formatPrice(a.listing.price)}
@@ -128,7 +140,7 @@ export default function CustomerDashboard() {
             </div>
             {data.totalAssigned > 5 && (
               <Link href="/my-listings" className="block text-center text-sm text-[var(--primary)] hover:underline mt-3">
-                Tum ilanlari gor ({data.totalAssigned})
+                Tüm ilanları gör ({data.totalAssigned})
               </Link>
             )}
           </CardContent>

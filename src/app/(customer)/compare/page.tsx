@@ -28,7 +28,7 @@ interface Listing {
 
 export default function ComparePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center">Yukleniyor...</div>}>
+    <Suspense fallback={<div className="p-8 text-center">Yükleniyor...</div>}>
       <CompareContent />
     </Suspense>
   );
@@ -51,15 +51,15 @@ function CompareContent() {
     });
   }, [searchParams]);
 
-  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yukleniyor...</div>;
+  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yükleniyor...</div>;
 
   if (listings.length === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Ilan Karsilastirma</h1>
+        <h1 className="text-3xl font-bold">İlan Karşılaştırma</h1>
         <Card>
           <CardContent className="py-12 text-center text-[var(--muted-foreground)]">
-            Karsilastirilacak ilan secilmedi. Ilanlarim sayfasindan ilan secerek karsilastirma yapabilirsiniz.
+            Karşılaştırılacak ilan seçilmedi. İlanlarım sayfasından ilan seçerek karşılaştırma yapabilirsiniz.
           </CardContent>
         </Card>
       </div>
@@ -68,12 +68,12 @@ function CompareContent() {
 
   const fields = [
     { label: "Fiyat", key: "price", format: (l: Listing) => formatPrice(l.price) },
-    { label: "Tip", key: "type", format: (l: Listing) => l.listingType === "SALE" ? "Satilik" : "Kiralik" },
+    { label: "Tip", key: "type", format: (l: Listing) => l.listingType === "SALE" ? "Satılık" : "Kiralık" },
     { label: "Konum", key: "location", format: (l: Listing) => `${l.city.name}${l.district ? `, ${l.district}` : ""}` },
     { label: "Kategori", key: "category", format: (l: Listing) => l.category?.name || "-" },
     { label: "Oda", key: "room", format: (l: Listing) => l.roomCount || "-" },
     { label: "m²", key: "sqm", format: (l: Listing) => l.squareMeters ? `${l.squareMeters} m²` : "-" },
-    { label: "Bina Yasi", key: "age", format: (l: Listing) => l.buildingAge || "-" },
+    { label: "Bina Yaşı", key: "age", format: (l: Listing) => l.buildingAge || "-" },
     { label: "Kat", key: "floor", format: (l: Listing) => l.floor || "-" },
   ];
 
@@ -83,7 +83,7 @@ function CompareContent() {
         <Link href="/my-listings">
           <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-2" /> Geri</Button>
         </Link>
-        <h1 className="text-2xl font-bold">Ilan Karsilastirma ({listings.length})</h1>
+        <h1 className="text-2xl font-bold">İlan Karşılaştırma ({listings.length})</h1>
       </div>
 
       <div className="overflow-x-auto">

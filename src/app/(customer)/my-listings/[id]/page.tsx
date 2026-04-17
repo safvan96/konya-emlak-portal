@@ -149,28 +149,28 @@ export default function ListingDetailPage() {
         <div className="md:col-span-2 space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Aciklama</CardTitle>
+              <CardTitle>Açıklama</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                {listing.description || "Aciklama mevcut degil."}
+                {listing.description || "Açıklama mevcut değil."}
               </p>
             </CardContent>
           </Card>
 
-          {/* Kisisel Notlar */}
+          {/* Kişisel Notlar */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <StickyNote className="h-5 w-5" />
-                Notlarim
+                Notlarım
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <textarea
                 value={note}
                 onChange={(e) => { setNote(e.target.value); setNoteSaved(false); }}
-                placeholder="Bu ilan hakkinda notlarinizi yazin..."
+                placeholder="Bu ilan hakkında notlarınızı yazın..."
                 className="w-full rounded-md border border-[var(--border)] bg-transparent px-3 py-2 text-sm min-h-[80px] resize-y focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
               />
               <div className="flex items-center gap-2">
