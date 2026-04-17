@@ -55,11 +55,25 @@ export default function ListingDetailPage() {
   const [note, setNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [similar, setSimilar] = useState<Array<{ id: string; title: string; price: number | null; district: string | null; imageUrls: string[]; listingType: string }>>([]);
 
   useEffect(() => {
     fetch(`/api/listings/${params.id}`)
       .then((r) => r.ok ? r.json() : null)
-      .then((data) => { setListing(data); setLoading(false); })
+      .then((data) => {
+        setListing(data);
+        setLoading(false);
+        // Benzer ilanları da çek — aynı ilçe + aynı tip (atanmış ilanlar arasından)
+        if (data?.district && data?.listingType) {
+          fetch("/api/assignments").then((r) => r.ok ? r.json() : []).then((ax: Array<{ listing: Listing & { imageUrls: string[] } }>) => {
+            const sim = ax
+              .map((a) => a.listing)
+              .filter((l) => l.id !== data.id && l.district === data.district && l.listingType === data.listingType)
+              .slice(0, 4);
+            setSimilar(sim.map((l) => ({ id: l.id, title: l.title, price: l.price, district: l.district, imageUrls: l.imageUrls, listingType: l.listingType })));
+          });
+        }
+      })
       .catch(() => setLoading(false));
 
     // Favori durumunu kontrol et
@@ -245,6 +259,31 @@ export default function ListingDetailPage() {
           </a>
         </div>
       </div>
+
+      {similar.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Benzer İlanlar ({listing.district})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {similar.map((s) => (
+                <a key={s.id} href={`/my-listings/${s.id}`} className="block rounded-md border border-[var(--border)] overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="aspect-video bg-[var(--muted)]">
+                    {s.imageUrls[0] && (
+                      <img src={s.imageUrls[0]} alt="" className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                  <div className="p-2 space-y-1">
+                    <p className="text-xs font-medium line-clamp-2">{s.title}</p>
+                    <p className="text-sm font-bold text-[var(--primary)]">{formatPrice(s.price)}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
