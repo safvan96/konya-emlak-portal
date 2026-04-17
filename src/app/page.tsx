@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { Building2, Shield, Users, Search, Heart, BarChart3 } from "lucide-react";
+import { Building2, Shield, Users, Search, Heart, Map } from "lucide-react";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -89,9 +89,9 @@ export default function Home() {
             description="Fotoğraf galerisi, oda sayısı, metrekare, bina yaşı ve tüm detaylar tek sayfada."
           />
           <FeatureCard
-            icon={BarChart3}
-            title="Çoklu Şehir Desteği"
-            description="Farklı şehirlerden ilanları takip edin, şehir bazlı filtreleme yapın."
+            icon={Map}
+            title="İlçe Haritası"
+            description="Konya ilçelerini harita üzerinde görün, ortalama fiyatları tek bakışta karşılaştırın."
           />
         </div>
       </section>
