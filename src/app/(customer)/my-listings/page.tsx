@@ -215,8 +215,29 @@ function MyListingsContent() {
 
       {filtered.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-[var(--muted-foreground)]">
-            Size atanmış ilan bulunmuyor.
+          <CardContent className="py-12 text-center space-y-3">
+            {assignments.length === 0 ? (
+              <>
+                <Building2 className="h-12 w-12 mx-auto text-[var(--muted-foreground)]" />
+                <p className="text-[var(--muted-foreground)]">Size henüz ilan atanmadı.</p>
+                <p className="text-xs text-[var(--muted-foreground)]">
+                  <Link href="/preferences" className="text-[var(--primary)] hover:underline">
+                    Tercihlerini ayarla
+                  </Link>{" "}
+                  — eşleşen ilanlar otomatik olarak gelir.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-[var(--muted-foreground)]">Filtreye uygun ilan yok.</p>
+                <button
+                  onClick={() => { setFilterType(""); setFilterDistrict(""); setFilterCategory(""); setPriceMin(""); setPriceMax(""); setSearchText(""); }}
+                  className="text-xs text-[var(--primary)] hover:underline"
+                >
+                  Filtreleri temizle
+                </button>
+              </>
+            )}
           </CardContent>
         </Card>
       ) : (

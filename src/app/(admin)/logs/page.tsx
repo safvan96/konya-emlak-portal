@@ -32,7 +32,7 @@ const ACTION_LABELS: Record<string, string> = {
   CITY_CREATED: "Şehir Ekleme",
   CITY_UPDATED: "Şehir Güncelleme",
   ADMIN_NOTIFICATION: "Admin Bildirimi",
-  SEND_NOTIFICATION: "Bildirim Gonderme",
+  SEND_NOTIFICATION: "Bildirim Gönderme",
 };
 
 export default function LogsPage() {
