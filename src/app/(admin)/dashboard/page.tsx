@@ -123,6 +123,9 @@ export default function DashboardPage() {
                 <p className="text-xs text-[var(--muted-foreground)]">
                   +{stats.lastScrape.accepted} / -{stats.lastScrape.rejected}
                 </p>
+                <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5">
+                  {new Date(stats.lastScrape.startedAt).toLocaleString("tr-TR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                </p>
               </>
             ) : (
               <div className="text-sm text-[var(--muted-foreground)]">Henüz yok</div>

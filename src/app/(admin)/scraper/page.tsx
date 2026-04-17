@@ -124,9 +124,43 @@ export default function ScraperPage() {
     }
   };
 
+  const completedRuns = runs.filter((r) => r.status === "completed");
+  const totalAccepted = completedRuns.reduce((s, r) => s + r.accepted, 0);
+  const totalRejected = completedRuns.reduce((s, r) => s + r.rejected, 0);
+  const totalDuplicates = completedRuns.reduce((s, r) => s + r.duplicates, 0);
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Scraper Yönetimi</h1>
+
+      {runs.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-[var(--muted-foreground)]">Toplam Çalıştırma</p>
+              <p className="text-2xl font-bold">{runs.length}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-[var(--muted-foreground)]">Toplam Kabul</p>
+              <p className="text-2xl font-bold text-green-600">{totalAccepted}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-[var(--muted-foreground)]">Toplam Red</p>
+              <p className="text-2xl font-bold text-red-500">{totalRejected}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-[var(--muted-foreground)]">Tekrar</p>
+              <p className="text-2xl font-bold text-[var(--muted-foreground)]">{totalDuplicates}</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <Card>
         <CardHeader>
