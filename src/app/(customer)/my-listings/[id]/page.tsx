@@ -20,6 +20,8 @@ import {
   Copy,
   Check,
   Phone,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 
 interface Listing {
@@ -56,6 +58,7 @@ export default function ListingDetailPage() {
   const [noteSaved, setNoteSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [similar, setSimilar] = useState<Array<{ id: string; title: string; price: number | null; district: string | null; imageUrls: string[]; listingType: string }>>([]);
+  const [priceHistory, setPriceHistory] = useState<Array<{ oldPrice: number; newPrice: number; changedAt: string }>>([]);
 
   useEffect(() => {
     fetch(`/api/listings/${params.id}`)
@@ -85,6 +88,9 @@ export default function ListingDetailPage() {
     fetch(`/api/notes?listingId=${params.id}`).then((r) => r.ok ? r.json() : null).then((n) => {
       if (n?.content) setNote(n.content);
     });
+
+    // Fiyat geçmişi
+    fetch(`/api/listings/${params.id}/history`).then((r) => r.ok ? r.json() : []).then(setPriceHistory);
   }, [params.id]);
 
   async function saveNote() {
@@ -204,6 +210,27 @@ export default function ListingDetailPage() {
               <div className="text-2xl font-bold text-[var(--primary)]">
                 {formatPrice(listing.price)}
               </div>
+              {priceHistory.length > 0 && (
+                <div className="space-y-1 text-xs">
+                  <p className="text-[var(--muted-foreground)] font-medium">Fiyat Geçmişi</p>
+                  {priceHistory.slice(0, 3).map((p, i) => {
+                    const down = p.newPrice < p.oldPrice;
+                    const diff = Math.abs(p.newPrice - p.oldPrice);
+                    const pct = p.oldPrice > 0 ? Math.round((diff / p.oldPrice) * 100) : 0;
+                    return (
+                      <div key={i} className="flex items-center justify-between rounded bg-[var(--muted)] px-2 py-1">
+                        <span className="flex items-center gap-1">
+                          {down ? <TrendingDown className="h-3 w-3 text-green-600" /> : <TrendingUp className="h-3 w-3 text-red-500" />}
+                          <span className={down ? "text-green-600" : "text-red-500"}>%{pct}</span>
+                        </span>
+                        <span className="text-[var(--muted-foreground)]">
+                          {formatDate(p.changedAt)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               <div className="flex gap-2 flex-wrap">
                 <Badge variant={listing.listingType === "SALE" ? "default" : "secondary"}>
                   {listing.listingType === "SALE" ? "Satılık" : "Kiralık"}
