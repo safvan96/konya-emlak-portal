@@ -29,7 +29,7 @@ export default function AnalyticsPage() {
   if (!data) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Istatistikler</h1>
+        <h1 className="text-3xl font-bold">İstatistikler</h1>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
             <Card key={i}><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
@@ -43,9 +43,9 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Istatistikler</h1>
+      <h1 className="text-3xl font-bold">İstatistikler</h1>
 
-      {/* Fiyat Istatistikleri */}
+      {/* Fiyat İstatistikleri */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4 text-center">
@@ -55,13 +55,13 @@ export default function AnalyticsPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-xs text-[var(--muted-foreground)]">En Dusuk</p>
+            <p className="text-xs text-[var(--muted-foreground)]">En Düşük</p>
             <p className="text-xl font-bold text-green-600">{formatPrice(data.priceStats.min)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-xs text-[var(--muted-foreground)]">En Yuksek</p>
+            <p className="text-xs text-[var(--muted-foreground)]">En Yüksek</p>
             <p className="text-xl font-bold text-red-500">{formatPrice(data.priceStats.max)}</p>
           </CardContent>
         </Card>
@@ -74,10 +74,10 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Durum Dagilimi */}
+        {/* Durum Dağılımı */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><PieChart className="h-5 w-5" /> Durum Dagilimi</CardTitle>
+            <CardTitle className="flex items-center gap-2"><PieChart className="h-5 w-5" /> Durum Dağılımı</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {data.byStatus.map((item) => (
@@ -100,7 +100,7 @@ export default function AnalyticsPage() {
         {/* Tip Dagilimi */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5" /> Satilik / Kiralik</CardTitle>
+            <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5" /> Satılık / Kiralık</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {data.byType.map((item) => {
@@ -126,10 +126,10 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        {/* Sehir Bazli */}
+        {/* Şehir Bazlı */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> Sehir Bazli (Aktif)</CardTitle>
+            <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> Şehir Bazlı (Aktif)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {data.byCity.length === 0 ? (
@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
         {/* Kategori Bazli */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Tag className="h-5 w-5" /> Kategori Bazli (Aktif)</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Tag className="h-5 w-5" /> Kategori Bazlı (Aktif)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {data.byCategory.length === 0 ? (
@@ -161,11 +161,11 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      {/* Sehir Fiyat Karsilastirmasi */}
+      {/* Şehir Fiyat Karşılaştırması */}
       {data.cityPriceStats && data.cityPriceStats.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5" /> Sehir Fiyat Karsilastirmasi (Satilik)</CardTitle>
+            <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5" /> Şehir Fiyat Karşılaştırması (Satılık)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -174,8 +174,8 @@ export default function AnalyticsPage() {
                   <tr className="border-b text-left">
                     <th className="pb-2 font-medium">Şehir</th>
                     <th className="pb-2 font-medium text-right">Ortalama</th>
-                    <th className="pb-2 font-medium text-right">En Dusuk</th>
-                    <th className="pb-2 font-medium text-right">En Yuksek</th>
+                    <th className="pb-2 font-medium text-right">En Düşük</th>
+                    <th className="pb-2 font-medium text-right">En Yüksek</th>
                     <th className="pb-2 font-medium text-right">İlan</th>
                   </tr>
                 </thead>
@@ -196,11 +196,11 @@ export default function AnalyticsPage() {
         </Card>
       )}
 
-      {/* Ilce Fiyat Sirasi */}
+      {/* İlçe Fiyat Sırası */}
       {data.districtPrices && data.districtPrices.data.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> {data.districtPrices.city} - Ilce Ortalama Fiyatlari (Satilik)</CardTitle>
+            <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> {data.districtPrices.city} - İlçe Ortalama Fiyatları (Satılık)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {data.districtPrices.data.map((d) => {
@@ -223,7 +223,7 @@ export default function AnalyticsPage() {
         </Card>
       )}
 
-      {/* Filtreleme Istatistikleri */}
+      {/* Filtreleme İstatistikleri */}
       {data.filterStats && (
         <Card>
           <CardHeader>
