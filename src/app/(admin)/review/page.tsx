@@ -23,7 +23,7 @@ interface Listing {
   category: { name: string } | null;
 }
 
-// Reddedilmis ilanlari gozden gecirme - yanlislikla reddedilmis olabilir
+// Reddedilmiş ilanları gözden geçirme - yanlışlıkla reddedilmiş olabilir
 export default function ReviewPage() {
   const { toast } = useToast();
   const [listings, setListings] = useState<Listing[]>([]);
@@ -48,12 +48,12 @@ export default function ReviewPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "changeStatus", ids: [id], status: "ACTIVE" }),
     });
-    toast("Ilan onaylandi", "success");
+    toast("İlan onaylandı", "success");
     next();
   }
 
   function reject() {
-    toast("Ilan reddedildi", "info");
+    toast("İlan reddedildi", "info");
     next();
   }
 
@@ -61,6 +61,20 @@ export default function ReviewPage() {
     if (index < listings.length - 1) setIndex(index + 1);
     else { setListings((prev) => prev.filter((_, i) => i > index)); setIndex(0); }
   }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const l = listings[index];
+      if (!l) return;
+      if (e.key === "ArrowRight") { e.preventDefault(); if (index < listings.length - 1) setIndex(index + 1); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); if (index > 0) setIndex(index - 1); }
+      else if (e.key === "a" || e.key === "A") { e.preventDefault(); approve(l.id); }
+      else if (e.key === "r" || e.key === "R") { e.preventDefault(); reject(); }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [index, listings]);
 
   if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yükleniyor...</div>;
 
@@ -70,7 +84,7 @@ export default function ReviewPage() {
         <h1 className="text-3xl font-bold">İlan İnceleme</h1>
         <Card>
           <CardContent className="py-12 text-center text-[var(--muted-foreground)]">
-            Incelenecek ilan yok. Tum reddedilen ilanlar gozden gecirildi.
+            İncelenecek ilan yok. Tüm reddedilen ilanlar gözden geçirildi.
           </CardContent>
         </Card>
       </div>
@@ -82,9 +96,14 @@ export default function ReviewPage() {
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h1 className="text-3xl font-bold">İlan İnceleme</h1>
-        <Badge variant="secondary">{index + 1} / {listings.length}</Badge>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-[var(--muted-foreground)] hidden sm:inline">
+            Kısayollar: <kbd className="px-1 rounded bg-[var(--muted)] font-mono">A</kbd> onayla · <kbd className="px-1 rounded bg-[var(--muted)] font-mono">R</kbd> reddet · <kbd className="px-1 rounded bg-[var(--muted)] font-mono">←→</kbd> gezin
+          </span>
+          <Badge variant="secondary">{index + 1} / {listings.length}</Badge>
+        </div>
       </div>
 
       <Card>
@@ -121,7 +140,7 @@ export default function ReviewPage() {
           {/* Aksiyonlar */}
           <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
             <Button variant="outline" size="sm" disabled={index === 0} onClick={() => setIndex(index - 1)}>
-              <ChevronLeft className="h-4 w-4 mr-1" /> Onceki
+              <ChevronLeft className="h-4 w-4 mr-1" /> Önceki
             </Button>
             <div className="flex gap-3">
               <Button variant="destructive" size="lg" onClick={reject}>
