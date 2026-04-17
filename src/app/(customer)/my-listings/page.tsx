@@ -14,6 +14,7 @@ import { CardSkeleton } from "@/components/ui/skeleton";
 
 interface Assignment {
   id: string;
+  assignedAt: string;
   listing: {
     id: string;
     title: string;
@@ -254,6 +255,11 @@ function MyListingsContent() {
                   <Badge className="absolute top-2 left-2" variant={a.listing.listingType === "SALE" ? "default" : "secondary"}>
                     {a.listing.listingType === "SALE" ? "Satılık" : "Kiralık"}
                   </Badge>
+                  {a.assignedAt && (Date.now() - new Date(a.assignedAt).getTime()) < 24 * 60 * 60 * 1000 && (
+                    <span className="absolute top-2 left-2 translate-y-7 px-2 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold animate-pulse">
+                      YENİ
+                    </span>
+                  )}
                   </>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
