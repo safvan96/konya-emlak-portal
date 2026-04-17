@@ -82,7 +82,7 @@ export default function CustomerDetailPage() {
         </Badge>
       </div>
 
-      {/* Ozet */}
+      {/* Özet */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
@@ -115,7 +115,7 @@ export default function CustomerDetailPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Calendar className="h-5 w-5 text-[var(--muted-foreground)]" />
             <div>
-              <p className="text-xs text-[var(--muted-foreground)]">Kayit Tarihi</p>
+              <p className="text-xs text-[var(--muted-foreground)]">Kayıt Tarihi</p>
               <p className="text-sm font-medium">{formatDate(customer.createdAt)}</p>
             </div>
           </CardContent>
@@ -123,12 +123,12 @@ export default function CustomerDetailPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Atanmis Ilanlar */}
+        {/* Atanmış İlanlar */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5" />
-              Atanmis Ilanlar ({assignments.length})
+              Atanmış İlanlar ({assignments.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -151,7 +151,7 @@ export default function CustomerDetailPage() {
                     </TableRow>
                   ))}
                   {assignments.length === 0 && (
-                    <TableRow><TableCell className="text-center py-4 text-[var(--muted-foreground)]">Atanmis ilan yok</TableCell></TableRow>
+                    <TableRow><TableCell className="text-center py-4 text-[var(--muted-foreground)]">Atanmış ilan yok</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -228,7 +228,7 @@ export default function CustomerDetailPage() {
           {preferences ? (
             <div className="grid gap-3 md:grid-cols-2 text-sm">
               <div>
-                <span className="text-[var(--muted-foreground)]">Sehirler:</span>
+                <span className="text-[var(--muted-foreground)]">Şehirler:</span>
                 <span className="ml-2 font-medium">{preferences.cityIds?.length > 0 ? preferences.cityIds.join(", ") : "Hepsi"}</span>
               </div>
               <div>
@@ -244,12 +244,12 @@ export default function CustomerDetailPage() {
                 <span className="ml-2 font-medium">
                   {preferences.priceMin || preferences.priceMax
                     ? `${preferences.priceMin ? formatPrice(preferences.priceMin) : "0"} - ${preferences.priceMax ? formatPrice(preferences.priceMax) : "∞"}`
-                    : "Sinir yok"}
+                    : "Sınır yok"}
                 </span>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-[var(--muted-foreground)]">Tercih belirlenmemis</p>
+            <p className="text-sm text-[var(--muted-foreground)]">Tercih belirlenmemiş</p>
           )}
         </CardContent>
       </Card>
