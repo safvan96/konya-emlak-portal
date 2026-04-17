@@ -74,25 +74,25 @@ function CompareContent() {
     { label: "Konum", format: (l: Listing) => `${l.city.name}${l.district ? `, ${l.district}` : ""}` },
     { label: "Kategori", format: (l: Listing) => l.category?.name || "-" },
     { label: "Oda", format: (l: Listing) => l.roomCount || "-" },
-    { label: "m2", format: (l: Listing) => l.squareMeters ? `${l.squareMeters} m2` : "-" },
-    { label: "Bina Yasi", format: (l: Listing) => l.buildingAge || "-" },
+    { label: "m²", format: (l: Listing) => l.squareMeters ? `${l.squareMeters} m²` : "-" },
+    { label: "Bina Yaşı", format: (l: Listing) => l.buildingAge || "-" },
     { label: "Kat", format: (l: Listing) => l.floor || "-" },
-    { label: "Kaynak", format: (l: Listing) => l.isFromOwner ? "Sahibinden" : "Emlakci" },
+    { label: "Kaynak", format: (l: Listing) => l.isFromOwner ? "Sahibinden" : "Emlakçı" },
     { label: "Durum", format: (l: Listing) => l.status },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/listings"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-2" /> Ilanlar</Button></Link>
-        <h1 className="text-2xl font-bold">Ilan Karsilastirma</h1>
+        <Link href="/listings"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-2" /> İlanlar</Button></Link>
+        <h1 className="text-2xl font-bold">İlan Karşılaştırma</h1>
       </div>
 
-      {/* Ilan Ekle */}
+      {/* İlan Ekle */}
       <Card>
         <CardContent className="p-4">
           <div className="flex gap-2">
-            <Input placeholder="Ilan ara..." value={searchText} onChange={(e) => setSearchText(e.target.value)}
+            <Input placeholder="İlan ara..." value={searchText} onChange={(e) => setSearchText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && searchListings()} />
             <Button onClick={searchListings}><Search className="h-4 w-4" /></Button>
           </div>
@@ -112,7 +112,7 @@ function CompareContent() {
 
       {listings.length === 0 ? (
         <Card><CardContent className="py-12 text-center text-[var(--muted-foreground)]">
-          Karsilastirilacak ilan ekleyin (arama ile max 4)
+          Karşılaştırılacak ilan ekleyin (arama ile max 4)
         </CardContent></Card>
       ) : (
         <div className="overflow-x-auto">
