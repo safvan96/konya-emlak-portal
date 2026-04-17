@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
@@ -8,6 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, TrendingUp, Home } from "lucide-react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
+
+const KonyaMap = dynamic(() => import("@/components/customer/konya-map"), {
+  ssr: false,
+  loading: () => <div className="h-[500px] w-full rounded-lg bg-[var(--muted)] animate-pulse" />,
+});
 
 interface DistrictData {
   district: string;
@@ -103,7 +109,9 @@ export default function CustomerMapPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+        <>
+          <KonyaMap data={data} />
+          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
           {data.map((d) => {
             const intensity = Math.round((d.count / maxCount) * 100);
             const isActive = selectedDistrict === d.district;
@@ -140,7 +148,8 @@ export default function CustomerMapPage() {
               </Card>
             );
           })}
-        </div>
+          </div>
+        </>
       )}
 
       {selected && (
