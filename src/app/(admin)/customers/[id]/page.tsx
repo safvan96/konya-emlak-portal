@@ -13,8 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const ACTION_LABELS: Record<string, string> = {
   LOGIN: "Giriş", LOGOUT: "Çıkış", VIEW_LISTING: "İlan Görüntüleme",
-  FAVORITE_ADD: "Favori Ekleme", FAVORITE_REMOVE: "Favori Cikarma",
-  PASSWORD_CHANGED: "Sifre Degisikligi",
+  FAVORITE_ADD: "Favori Ekleme", FAVORITE_REMOVE: "Favori Çıkarma",
+  PASSWORD_CHANGED: "Şifre Değişikliği",
 };
 
 interface CustomerDetail {

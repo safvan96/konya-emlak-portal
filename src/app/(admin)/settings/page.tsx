@@ -44,7 +44,7 @@ export default function SettingsPage() {
               <p className="text-xs text-[var(--muted-foreground)]">Sunucu</p>
               {health ? (
                 <Badge variant={health.status === "ok" ? "success" : "destructive"}>
-                  {health.status === "ok" ? "Calisiyor" : "Hata"}
+                  {health.status === "ok" ? "Çalışıyor" : "Hata"}
                 </Badge>
               ) : <p className="text-sm">Yükleniyor...</p>}
             </div>
@@ -54,10 +54,10 @@ export default function SettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Database className="h-5 w-5 text-[var(--muted-foreground)]" />
             <div>
-              <p className="text-xs text-[var(--muted-foreground)]">Veritabani</p>
+              <p className="text-xs text-[var(--muted-foreground)]">Veritabanı</p>
               {health ? (
                 <Badge variant={health.db === "connected" ? "success" : "destructive"}>
-                  {health.db === "connected" ? "Bagli" : "Baglanti Yok"}
+                  {health.db === "connected" ? "Bağlı" : "Bağlantı Yok"}
                 </Badge>
               ) : <p className="text-sm">Yükleniyor...</p>}
             </div>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
                 <span className="font-medium">10 / dakika</span>
               </div>
               <div className="flex justify-between border-b border-[var(--border)] pb-2">
-                <span className="text-[var(--muted-foreground)]">Sifre Degistirme Limit</span>
+                <span className="text-[var(--muted-foreground)]">Şifre Değiştirme Limit</span>
                 <span className="font-medium">5 / 15 dakika</span>
               </div>
             </div>

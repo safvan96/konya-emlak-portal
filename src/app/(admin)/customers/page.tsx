@@ -163,7 +163,7 @@ export default function CustomersPage() {
           </a>
           <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm({ name: "", surname: "", email: "", password: "" }); }}>
             {showForm ? <X className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
-            {showForm ? "Iptal" : "Yeni Musteri"}
+            {showForm ? "İptal" : "Yeni Müşteri"}
           </Button>
         </div>
       </div>

@@ -35,9 +35,9 @@ const ACTION_LABELS: Record<string, string> = {
   FAVORITE_REMOVE: "Favorilerden Çıkarma",
   PASSWORD_CHANGED: "Şifre Değişikliği",
   CITY_CREATED: "Şehir Ekleme",
-  CITY_UPDATED: "Sehir Guncelleme",
+  CITY_UPDATED: "Şehir Güncelleme",
   ADMIN_NOTIFICATION: "Admin Bildirimi",
-  SEND_NOTIFICATION: "Bildirim Gonderme",
+  SEND_NOTIFICATION: "Bildirim Gönderme",
   FORCE_DEACTIVATE: "Zorla Deaktif",
 };
 

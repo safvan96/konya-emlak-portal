@@ -252,9 +252,9 @@ export default function ListingsPage() {
               <Button size="sm" variant="outline" onClick={() => {
                 if (categories.length === 0) fetch("/api/cities").then(() => {});
                 fetch("/api/listings?limit=1").then((r) => r.json()).then(() => {
-                  // Kategorileri DB'den cekmek yerine basit liste
+                  // Kategorileri DB'den çekmek yerine basit liste
                   setCategories([
-                    { id: "daire", name: "Daire" }, { id: "mustakil-ev", name: "Mustakil" },
+                    { id: "daire", name: "Daire" }, { id: "mustakil-ev", name: "Müstakil Ev" },
                     { id: "villa", name: "Villa" }, { id: "arsa", name: "Arsa" },
                   ]);
                 });
