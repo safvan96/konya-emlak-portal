@@ -23,16 +23,16 @@ export default function HistoryPage() {
       .then((data) => { setLogs(data); setLoading(false); });
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yukleniyor...</div>;
+  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yükleniyor...</div>;
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <h1 className="text-3xl font-bold">Goruntuleme Gecmisi</h1>
+      <h1 className="text-3xl font-bold">Görüntüleme Geçmişi</h1>
 
       {logs.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-[var(--muted-foreground)]">
-            Henuz ilan goruntulemediniz.
+            Henüz ilan görüntülemediniz.
           </CardContent>
         </Card>
       ) : (

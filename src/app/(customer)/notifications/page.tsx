@@ -22,7 +22,7 @@ export default function NotificationsPage() {
       .then((data) => { setNotifications(data); setLoading(false); });
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yukleniyor...</div>;
+  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yükleniyor...</div>;
 
   return (
     <div className="space-y-6 max-w-2xl">

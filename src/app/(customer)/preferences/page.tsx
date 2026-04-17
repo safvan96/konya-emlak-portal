@@ -31,9 +31,9 @@ export default function PreferencesPage() {
       setCities(citiesData);
       // Kategorileri listings API'den almak yerine sabit kullanalim
       setCategories([
-        { id: "daire", name: "Daire" }, { id: "mustakil-ev", name: "Mustakil Ev" },
+        { id: "daire", name: "Daire" }, { id: "mustakil-ev", name: "Müstakil Ev" },
         { id: "villa", name: "Villa" }, { id: "arsa", name: "Arsa" },
-        { id: "tarla", name: "Tarla" }, { id: "dukkan", name: "Dukkan" },
+        { id: "tarla", name: "Tarla" }, { id: "dukkan", name: "Dükkan" },
         { id: "ofis", name: "Ofis" }, { id: "depo", name: "Depo" },
       ]);
       if (prefs) {
@@ -73,23 +73,23 @@ export default function PreferencesPage() {
     setSelectedCategories((prev) => prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]);
   }
 
-  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yukleniyor...</div>;
+  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">Yükleniyor...</div>;
 
   return (
     <div className="space-y-6 max-w-2xl">
       <h1 className="text-3xl font-bold">Tercihlerim</h1>
       <p className="text-[var(--muted-foreground)]">
-        Tercihlerinize gore yeni ilanlar otomatik olarak size atanabilir.
+        Tercihlerinize göre yeni ilanlar otomatik olarak size atanabilir.
       </p>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" /> Ilan Tercihleri</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" /> İlan Tercihleri</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Sehirler */}
+          {/* Şehirler */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Sehirler</label>
+            <label className="text-sm font-medium mb-2 block">Şehirler</label>
             <div className="flex flex-wrap gap-2">
               {cities.map((c) => (
                 <button
@@ -104,7 +104,7 @@ export default function PreferencesPage() {
                   {c.name}
                 </button>
               ))}
-              {selectedCities.length === 0 && <span className="text-xs text-[var(--muted-foreground)]">Tum sehirler</span>}
+              {selectedCities.length === 0 && <span className="text-xs text-[var(--muted-foreground)]">Tüm şehirler</span>}
             </div>
           </div>
 
@@ -125,23 +125,23 @@ export default function PreferencesPage() {
                   {c.name}
                 </button>
               ))}
-              {selectedCategories.length === 0 && <span className="text-xs text-[var(--muted-foreground)]">Tum kategoriler</span>}
+              {selectedCategories.length === 0 && <span className="text-xs text-[var(--muted-foreground)]">Tüm kategoriler</span>}
             </div>
           </div>
 
           {/* Tip */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Ilan Tipi</label>
+            <label className="text-sm font-medium mb-2 block">İlan Tipi</label>
             <Select value={listingType} onChange={(e) => setListingType(e.target.value)} className="max-w-xs">
               <option value="">Hepsi</option>
-              <option value="SALE">Satilik</option>
-              <option value="RENT">Kiralik</option>
+              <option value="SALE">Satılık</option>
+              <option value="RENT">Kiralık</option>
             </Select>
           </div>
 
-          {/* Fiyat Araligi */}
+          {/* Fiyat Aralığı */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Fiyat Araligi</label>
+            <label className="text-sm font-medium mb-2 block">Fiyat Aralığı</label>
             <div className="flex gap-3 items-center max-w-md">
               <Input type="number" placeholder="Min" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} />
               <span className="text-[var(--muted-foreground)]">-</span>
@@ -161,7 +161,7 @@ export default function PreferencesPage() {
             <div>
               <label htmlFor="autoAssign" className="text-sm font-medium cursor-pointer">Otomatik Atama</label>
               <p className="text-xs text-[var(--muted-foreground)]">
-                Tercihlerinize uyan yeni ilanlar otomatik olarak size atansin
+                Tercihlerinize uyan yeni ilanlar otomatik olarak size atansın
               </p>
             </div>
           </div>

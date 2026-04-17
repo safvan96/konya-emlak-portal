@@ -163,7 +163,7 @@ export default function MyListingsPage() {
             href={`/compare?ids=${Array.from(compareIds).join(",")}`}
             className="self-center rounded-md bg-[var(--primary)] text-[var(--primary-foreground)] px-3 py-1.5 text-xs font-medium hover:opacity-90"
           >
-            Karsilastir ({compareIds.size})
+            Karşılaştır ({compareIds.size})
           </Link>
         )}
       </div>
@@ -191,7 +191,7 @@ export default function MyListingsPage() {
                       compareIds.has(a.listing.id) ? "bg-[var(--primary)] text-white" : "bg-black/50 text-white hover:bg-black/70"
                     }`}
                   >
-                    {compareIds.has(a.listing.id) ? "Secildi" : "Karsilastir"}
+                    {compareIds.has(a.listing.id) ? "Seçildi" : "Karşılaştır"}
                   </button>
                   <ImageWithFallback
                     src={a.listing.imageUrls[0]}
