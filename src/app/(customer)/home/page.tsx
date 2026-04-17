@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Heart, Bell, Eye, Map } from "lucide-react";
+import { Building2, Heart, Bell, Eye, Map, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { formatPrice, formatDate } from "@/lib/utils";
 
@@ -13,6 +13,10 @@ interface DashboardData {
   totalFavorites: number;
   unread: number;
   notifications: number;
+  saleCount: number;
+  rentCount: number;
+  saleTotalValue: number;
+  rentAvgPrice: number;
   recentAssignments: Array<{
     id: string;
     assignedAt: string;
@@ -29,12 +33,24 @@ export default function CustomerDashboard() {
       fetch("/api/favorites").then((r) => r.ok ? r.json() : []),
       fetch("/api/assignments/unread").then((r) => r.ok ? r.json() : { unread: 0 }),
       fetch("/api/notifications").then((r) => r.ok ? r.json() : []),
-    ]).then(([assignments, favorites, unread, notifications]) => {
+    ]).then((results) => {
+      const assignments = results[0] as Array<{ id: string; assignedAt: string; listing: { id: string; title: string; price: number | null; listingType: string; city: { name: string } } }>;
+      const favorites = results[1] as Array<unknown>;
+      const unread = results[2] as { unread: number };
+      const notifications = results[3] as Array<unknown>;
+      const saleListings = assignments.filter((a) => a.listing.listingType === "SALE" && a.listing.price);
+      const rentListings = assignments.filter((a) => a.listing.listingType === "RENT" && a.listing.price);
+      const saleTotal = saleListings.reduce((s, a) => s + (a.listing.price || 0), 0);
+      const rentAvg = rentListings.length > 0 ? Math.round(rentListings.reduce((s, a) => s + (a.listing.price || 0), 0) / rentListings.length) : 0;
       setData({
         totalAssigned: assignments.length,
         totalFavorites: favorites.length,
         unread: unread.unread,
         notifications: notifications.length,
+        saleCount: saleListings.length,
+        rentCount: rentListings.length,
+        saleTotalValue: saleTotal,
+        rentAvgPrice: rentAvg,
         recentAssignments: assignments.slice(0, 5),
       });
     });
@@ -113,6 +129,36 @@ export default function CustomerDashboard() {
           </Card>
         </Link>
       </div>
+
+      {/* Portföy özeti */}
+      {(data.saleCount > 0 || data.rentCount > 0) && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {data.saleCount > 0 && (
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <TrendingUp className="h-8 w-8 text-green-500" />
+                <div className="flex-1">
+                  <p className="text-xs text-[var(--muted-foreground)]">Satılık Portföy Toplam</p>
+                  <p className="text-xl font-bold text-[var(--primary)]">{formatPrice(data.saleTotalValue)}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">{data.saleCount} ilan · ort. {formatPrice(Math.round(data.saleTotalValue / data.saleCount))}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {data.rentCount > 0 && (
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <Building2 className="h-8 w-8 text-blue-500" />
+                <div className="flex-1">
+                  <p className="text-xs text-[var(--muted-foreground)]">Kiralık Ortalama</p>
+                  <p className="text-xl font-bold text-[var(--primary)]">{formatPrice(data.rentAvgPrice)} /ay</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">{data.rentCount} ilan</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* Son Atanan Ilanlar */}
       {data.recentAssignments.length > 0 && (
