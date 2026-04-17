@@ -5,12 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
-import { Building2, Heart, User, LogOut, Settings, Bell, Clock, LayoutDashboard } from "lucide-react";
+import { Building2, Heart, User, LogOut, Settings, Bell, Clock, LayoutDashboard, Map } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 const navItems = [
   { href: "/home", label: "Ana Sayfa", icon: LayoutDashboard },
   { href: "/my-listings", label: "İlanlarım", icon: Building2 },
+  { href: "/map", label: "Harita", icon: Map },
   { href: "/favorites", label: "Favoriler", icon: Heart },
   { href: "/history", label: "Gecmis", icon: Clock },
   { href: "/notifications", label: "Bildirimler", icon: Bell },

@@ -14,8 +14,6 @@ import {
   Ruler,
   Building,
   Heart,
-  ChevronLeft,
-  ChevronRight,
   StickyNote,
   Save,
   Share2,
@@ -53,7 +51,6 @@ export default function ListingDetailPage() {
   const router = useRouter();
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imageIndex, setImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [note, setNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
@@ -134,50 +131,16 @@ export default function ListingDetailPage() {
         </div>
       </div>
 
-      {/* Fotoğraf Galerisi */}
+      {/* Tek Görsel */}
       {images.length > 0 && (
         <Card className="overflow-hidden">
           <div className="relative aspect-video bg-black">
             <img
-              src={images[imageIndex]}
+              src={images[0]}
               alt={listing.title}
               className="w-full h-full object-contain"
             />
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={() => setImageIndex((i) => (i - 1 + images.length) % images.length)}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => setImageIndex((i) => (i + 1) % images.length)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                  {imageIndex + 1} / {images.length}
-                </div>
-              </>
-            )}
           </div>
-          {images.length > 1 && (
-            <div className="flex gap-1 p-2 overflow-x-auto">
-              {images.map((url, i) => (
-                <button
-                  key={i}
-                  onClick={() => setImageIndex(i)}
-                  className={`shrink-0 w-16 h-12 rounded overflow-hidden border-2 ${
-                    i === imageIndex ? "border-[var(--primary)]" : "border-transparent"
-                  }`}
-                >
-                  <img src={url} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
         </Card>
       )}
 
