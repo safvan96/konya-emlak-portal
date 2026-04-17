@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
       scraperTotals,
     },
     topViewedListings: topViewedListings.map((t) => ({
-      title: t.details?.replace("Ilan goruntulendi: ", "") || "Bilinmiyor",
+      title: t.details?.replace("İlan görüntülendi: ", "") || "Bilinmiyor",
       views: t._count,
     })),
     activeCustomers: activeCustomers.map((c) => ({

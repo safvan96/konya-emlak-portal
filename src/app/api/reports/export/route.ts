@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     const rows = listings.map((l) => {
       const city = cityMap[l.cityId] || "?";
       const cat = l.categoryId ? catMap[l.categoryId] || "?" : "Kategorisiz";
-      const type = l.listingType === "SALE" ? "Satilik" : "Kiralik";
+      const type = l.listingType === "SALE" ? "Satılık" : "Kiralık";
       const avg = Math.round(l._avg.price || 0);
       return `"${city}","${cat}","${type}","${l.status}","${l._count}","${avg}"`;
     });

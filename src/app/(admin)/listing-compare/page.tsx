@@ -29,7 +29,7 @@ interface Listing {
 
 export default function AdminComparePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center">Yukleniyor...</div>}>
+    <Suspense fallback={<div className="p-8 text-center">Yükleniyor...</div>}>
       <CompareContent />
     </Suspense>
   );
@@ -70,7 +70,7 @@ function CompareContent() {
 
   const fields = [
     { label: "Fiyat", format: (l: Listing) => formatPrice(l.price) },
-    { label: "Tip", format: (l: Listing) => l.listingType === "SALE" ? "Satilik" : "Kiralik" },
+    { label: "Tip", format: (l: Listing) => l.listingType === "SALE" ? "Satılık" : "Kiralık" },
     { label: "Konum", format: (l: Listing) => `${l.city.name}${l.district ? `, ${l.district}` : ""}` },
     { label: "Kategori", format: (l: Listing) => l.category?.name || "-" },
     { label: "Oda", format: (l: Listing) => l.roomCount || "-" },

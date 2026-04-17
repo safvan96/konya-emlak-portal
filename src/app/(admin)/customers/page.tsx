@@ -137,7 +137,7 @@ export default function CustomersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Musteri Yonetimi</h1>
+        <h1 className="text-3xl font-bold">Müşteri Yönetimi</h1>
         <div className="flex gap-2">
           <label className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-3 py-2 text-sm font-medium hover:bg-[var(--accent)] transition-colors cursor-pointer">
             <Upload className="h-4 w-4" /> Import
@@ -185,7 +185,7 @@ export default function CustomersPage() {
               <Button size="sm" variant="outline" onClick={() => bulkToggleActive(true)}>Aktif Yap</Button>
               <Button size="sm" variant="outline" onClick={() => bulkToggleActive(false)}>Pasif Yap</Button>
               <Button size="sm" variant="destructive" onClick={bulkDeleteCustomers}>Sil</Button>
-            <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowNotify(false); }}>Iptal</Button>
+            <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowNotify(false); }}>İptal</Button>
             </div>
           </div>
           {showNotify && (

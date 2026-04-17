@@ -12,7 +12,7 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ACTION_LABELS: Record<string, string> = {
-  LOGIN: "Giris", LOGOUT: "Cikis", VIEW_LISTING: "Ilan Goruntuleme",
+  LOGIN: "Giriş", LOGOUT: "Çıkış", VIEW_LISTING: "İlan Görüntüleme",
   FAVORITE_ADD: "Favori Ekleme", FAVORITE_REMOVE: "Favori Cikarma",
   PASSWORD_CHANGED: "Sifre Degisikligi",
 };
@@ -66,7 +66,7 @@ export default function CustomerDetailPage() {
     );
   }
 
-  if (!data) return <div className="p-8 text-center text-[var(--muted-foreground)]">Musteri bulunamadi</div>;
+  if (!data) return <div className="p-8 text-center text-[var(--muted-foreground)]">Müşteri bulunamadı</div>;
 
   const { customer, recentLogs, assignments, favorites, preferences } = data;
 
@@ -97,7 +97,7 @@ export default function CustomerDetailPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Building2 className="h-5 w-5 text-[var(--muted-foreground)]" />
             <div>
-              <p className="text-xs text-[var(--muted-foreground)]">Atanmis Ilan</p>
+              <p className="text-xs text-[var(--muted-foreground)]">Atanmış İlan</p>
               <p className="text-lg font-bold">{customer._count.assignments}</p>
             </div>
           </CardContent>
@@ -237,7 +237,7 @@ export default function CustomerDetailPage() {
               </div>
               <div>
                 <span className="text-[var(--muted-foreground)]">Tip:</span>
-                <span className="ml-2 font-medium">{preferences.listingType === "SALE" ? "Satilik" : preferences.listingType === "RENT" ? "Kiralik" : "Hepsi"}</span>
+                <span className="ml-2 font-medium">{preferences.listingType === "SALE" ? "Satılık" : preferences.listingType === "RENT" ? "Kiralık" : "Hepsi"}</span>
               </div>
               <div>
                 <span className="text-[var(--muted-foreground)]">Fiyat:</span>

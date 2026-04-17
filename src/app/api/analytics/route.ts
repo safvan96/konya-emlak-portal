@@ -62,7 +62,7 @@ export async function GET() {
   });
 
   const byTypeData = byType.map((item) => ({
-    type: item.listingType === "SALE" ? "Satilik" : "Kiralik",
+    type: item.listingType === "SALE" ? "Satılık" : "Kiralık",
     count: item._count,
   }));
 

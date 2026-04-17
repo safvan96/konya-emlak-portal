@@ -233,7 +233,7 @@ export default function ListingsPage() {
             </Select>
             <Select value={filterType} onChange={(e) => { setFilterType(e.target.value); }}>
               <option value="">Tum Tipler</option>
-              <option value="SALE">Satilik</option>
+              <option value="SALE">Satılık</option>
               <option value="RENT">Kiralık</option>
             </Select>
           </div>
@@ -273,13 +273,13 @@ export default function ListingsPage() {
               <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("ACTIVE")}>Aktif</Button>
               <Button size="sm" variant="outline" onClick={() => bulkUpdateStatus("PASSIVE")}>Pasif</Button>
               <Button size="sm" variant="destructive" onClick={bulkDelete}>Sil</Button>
-              <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowBulkAssign(false); setShowCategoryChange(false); }}>Iptal</Button>
+              <Button size="sm" variant="ghost" onClick={() => { setSelected(new Set()); setShowBulkAssign(false); setShowCategoryChange(false); }}>İptal</Button>
             </div>
           </div>
           {showBulkAssign && (
             <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] px-4 py-3">
               <Select value={bulkAssignTarget} onChange={(e) => setBulkAssignTarget(e.target.value)} className="flex-1">
-                <option value="">Musteri secin...</option>
+                <option value="">Müşteri seçin...</option>
                 {bulkAssignCustomers.map((c) => (
                   <option key={c.id} value={c.id}>{c.name} {c.surname}</option>
                 ))}

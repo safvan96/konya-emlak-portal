@@ -82,7 +82,7 @@ export default function ReportsPage() {
         <MetricCard icon={Link2} label="Atama" value={s.totalAssignments} />
         <MetricCard icon={Heart} label="Favori" value={s.totalFavorites} />
         <MetricCard icon={Eye} label="Goruntuleme" value={s.listingViews} />
-        <MetricCard icon={LogIn} label="Giris" value={s.logins} />
+        <MetricCard icon={LogIn} label="Giriş" value={s.logins} />
         <MetricCard icon={TrendingDown} label="Fiyat Degisimi" value={s.priceChanges} />
         <MetricCard icon={Bot} label="Scraper" value={s.scraperRuns} sub={`+${s.scraperTotals.accepted} kabul`} />
       </div>

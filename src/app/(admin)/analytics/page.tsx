@@ -67,7 +67,7 @@ export default function AnalyticsPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-xs text-[var(--muted-foreground)]">Aktif Ilan</p>
+            <p className="text-xs text-[var(--muted-foreground)]">Aktif İlan</p>
             <p className="text-xl font-bold">{data.priceStats.count}</p>
           </CardContent>
         </Card>
@@ -172,11 +172,11 @@ export default function AnalyticsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b text-left">
-                    <th className="pb-2 font-medium">Sehir</th>
+                    <th className="pb-2 font-medium">Şehir</th>
                     <th className="pb-2 font-medium text-right">Ortalama</th>
                     <th className="pb-2 font-medium text-right">En Dusuk</th>
                     <th className="pb-2 font-medium text-right">En Yuksek</th>
-                    <th className="pb-2 font-medium text-right">Ilan</th>
+                    <th className="pb-2 font-medium text-right">İlan</th>
                   </tr>
                 </thead>
                 <tbody>

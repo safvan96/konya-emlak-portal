@@ -46,7 +46,7 @@ export default function SettingsPage() {
                 <Badge variant={health.status === "ok" ? "success" : "destructive"}>
                   {health.status === "ok" ? "Calisiyor" : "Hata"}
                 </Badge>
-              ) : <p className="text-sm">Yukleniyor...</p>}
+              ) : <p className="text-sm">Yükleniyor...</p>}
             </div>
           </CardContent>
         </Card>
@@ -59,7 +59,7 @@ export default function SettingsPage() {
                 <Badge variant={health.db === "connected" ? "success" : "destructive"}>
                   {health.db === "connected" ? "Bagli" : "Baglanti Yok"}
                 </Badge>
-              ) : <p className="text-sm">Yukleniyor...</p>}
+              ) : <p className="text-sm">Yükleniyor...</p>}
             </div>
           </CardContent>
         </Card>

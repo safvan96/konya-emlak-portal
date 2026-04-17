@@ -29,7 +29,7 @@ export default function ListingsMapPage() {
     fetch(`/api/listings?${params}`)
       .then((r) => r.ok ? r.json() : { listings: [] })
       .then((res) => {
-        // Ilce bazli gruplama
+        // İlçe bazlı gruplama
         const groups: Record<string, { count: number; totalPrice: number; listings: DistrictData["listings"] }> = {};
         for (const l of res.listings) {
           const district = l.district || l.city?.name || "Diger";
@@ -70,11 +70,11 @@ export default function ListingsMapPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Ilce Haritasi</h1>
+        <h1 className="text-3xl font-bold">İlçe Haritası</h1>
         <Select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="w-40">
-          <option value="">Tumunu</option>
-          <option value="SALE">Satilik</option>
-          <option value="RENT">Kiralik</option>
+          <option value="">Tümünü</option>
+          <option value="SALE">Satılık</option>
+          <option value="RENT">Kiralık</option>
         </Select>
       </div>
 
@@ -128,7 +128,7 @@ export default function ListingsMapPage() {
                   <span className="text-sm truncate max-w-[300px]">{l.title}</span>
                   <div className="flex items-center gap-2 shrink-0">
                     <Badge variant={l.listingType === "SALE" ? "default" : "secondary"} className="text-xs">
-                      {l.listingType === "SALE" ? "Satilik" : "Kiralik"}
+                      {l.listingType === "SALE" ? "Satılık" : "Kiralık"}
                     </Badge>
                     <span className="text-sm font-medium">{formatPrice(l.price)}</span>
                   </div>
