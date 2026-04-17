@@ -214,13 +214,13 @@ export default function ListingsPage() {
               <option value="RENTED">Kiralandı</option>
             </Select>
             <Select value={filterCity} onChange={(e) => setFilterCity(e.target.value)}>
-              <option value="">Tum Sehirler</option>
+              <option value="">Tüm Şehirler</option>
               {citiesList.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </Select>
             <Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-              <option value="">Tum Kategoriler</option>
+              <option value="">Tüm Kategoriler</option>
               {categories.length > 0 ? categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               )) : (
@@ -232,7 +232,7 @@ export default function ListingsPage() {
               )}
             </Select>
             <Select value={filterType} onChange={(e) => { setFilterType(e.target.value); }}>
-              <option value="">Tum Tipler</option>
+              <option value="">Tüm Tipler</option>
               <option value="SALE">Satılık</option>
               <option value="RENT">Kiralık</option>
             </Select>
@@ -244,10 +244,10 @@ export default function ListingsPage() {
       {selected.size > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3 flex-wrap">
-            <span className="text-sm font-medium">{selected.size} ilan secildi</span>
+            <span className="text-sm font-medium">{selected.size} ilan seçildi</span>
             <div className="flex gap-2 ml-auto flex-wrap">
               <Button size="sm" variant="outline" onClick={openBulkAssign}>
-                <UserPlus className="h-3 w-3 mr-1" /> Musteriye Ata
+                <UserPlus className="h-3 w-3 mr-1" /> Müşteriye Ata
               </Button>
               <Button size="sm" variant="outline" onClick={() => {
                 if (categories.length === 0) fetch("/api/cities").then(() => {});
@@ -261,7 +261,7 @@ export default function ListingsPage() {
                 setShowCategoryChange(!showCategoryChange);
               }}>Kategori</Button>
               <Button size="sm" variant="outline" onClick={async () => {
-                if (!confirm(`${selected.size} ilani tekrar filtrelemek istiyor musunuz?`)) return;
+                if (!confirm(`${selected.size} ilanı tekrar filtrelemek istiyor musunuz?`)) return;
                 const res = await fetch("/api/listings/bulk", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -285,14 +285,14 @@ export default function ListingsPage() {
                 ))}
               </Select>
               <Button size="sm" onClick={doBulkAssign} disabled={!bulkAssignTarget}>
-                {selected.size} Ilan Ata
+                {selected.size} İlan Ata
               </Button>
             </div>
           )}
           {showCategoryChange && (
             <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] px-4 py-3">
               <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="flex-1">
-                <option value="">Kategori secin...</option>
+                <option value="">Kategori seçin...</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}

@@ -52,7 +52,7 @@ export default function CustomersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: editId, ...form, password: form.password || undefined }),
       });
-      if (res.ok) toast("Musteri guncellendi", "success");
+      if (res.ok) toast("Müşteri güncellendi", "success");
       else { const d = await res.json(); toast(d.error || "Hata", "error"); return; }
     } else {
       const res = await fetch("/api/customers", {
@@ -60,7 +60,7 @@ export default function CustomersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      if (res.ok) toast("Musteri olusturuldu", "success");
+      if (res.ok) toast("Müşteri oluşturuldu", "success");
       else { const d = await res.json(); toast(d.error || "Hata", "error"); return; }
     }
 
@@ -109,7 +109,7 @@ export default function CustomersPage() {
   }
 
   async function bulkDeleteCustomers() {
-    if (!confirm(`${selected.size} musteriyi silmek istediginize emin misiniz?`)) return;
+    if (!confirm(`${selected.size} müşteriyi silmek istediğinize emin misiniz?`)) return;
     await Promise.all(
       Array.from(selected).map((id) =>
         fetch(`/api/customers?id=${id}`, { method: "DELETE" })
@@ -148,7 +148,7 @@ export default function CustomersPage() {
               form.append("file", file);
               const res = await fetch("/api/customers/import", { method: "POST", body: form });
               const data = await res.json();
-              setImportResult(`${data.created} eklendi, ${data.skipped} atlandi, ${data.errors} hata`);
+              setImportResult(`${data.created} eklendi, ${data.skipped} atlandı, ${data.errors} hata`);
               fetchCustomers();
               e.target.value = "";
               setTimeout(() => setImportResult(null), 5000);
@@ -177,7 +177,7 @@ export default function CustomersPage() {
       {selected.size > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3 flex-wrap">
-            <span className="text-sm font-medium">{selected.size} musteri secildi</span>
+            <span className="text-sm font-medium">{selected.size} müşteri seçildi</span>
             <div className="flex gap-2 ml-auto flex-wrap">
               <Button size="sm" variant="outline" onClick={() => setShowNotify(!showNotify)}>
                 <Bell className="h-3 w-3 mr-1" /> Bildirim
