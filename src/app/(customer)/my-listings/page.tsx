@@ -118,9 +118,34 @@ function MyListingsContent() {
     );
   }
 
+  const saleCount = assignments.filter((a) => a.listing.listingType === "SALE").length;
+  const rentCount = assignments.filter((a) => a.listing.listingType === "RENT").length;
+
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">İlanlarım</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">İlanlarım</h1>
+        <div className="flex gap-2 text-sm">
+          <button
+            onClick={() => setFilterType("")}
+            className={`px-3 py-1 rounded-full transition-colors ${filterType === "" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] hover:bg-[var(--accent)]"}`}
+          >
+            Tümü ({assignments.length})
+          </button>
+          <button
+            onClick={() => setFilterType("SALE")}
+            className={`px-3 py-1 rounded-full transition-colors ${filterType === "SALE" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] hover:bg-[var(--accent)]"}`}
+          >
+            Satılık ({saleCount})
+          </button>
+          <button
+            onClick={() => setFilterType("RENT")}
+            className={`px-3 py-1 rounded-full transition-colors ${filterType === "RENT" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] hover:bg-[var(--accent)]"}`}
+          >
+            Kiralık ({rentCount})
+          </button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
         <Input
