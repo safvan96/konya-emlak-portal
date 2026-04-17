@@ -39,7 +39,7 @@ export default function ReportsPage() {
       .then(setReport);
   }, [period]);
 
-  const periodLabel = period === "week" ? "Son 7 Gun" : period === "month" ? "Son 30 Gun" : "Tum Zamanlar";
+  const periodLabel = period === "week" ? "Son 7 Gün" : period === "month" ? "Son 30 Gün" : "Tüm Zamanlar";
 
   if (!report) {
     return (
@@ -60,38 +60,38 @@ export default function ReportsPage() {
         <h1 className="text-3xl font-bold">Raporlar</h1>
         <div className="flex items-center gap-2">
           <a href="/api/reports/export?type=customers" download className="inline-flex items-center gap-1 rounded-md border border-[var(--border)] px-3 py-2 text-xs hover:bg-[var(--accent)]">
-            <Download className="h-3 w-3" /> Musteri Raporu
+            <Download className="h-3 w-3" /> Müşteri Raporu
           </a>
           <a href="/api/reports/export?type=listings" download className="inline-flex items-center gap-1 rounded-md border border-[var(--border)] px-3 py-2 text-xs hover:bg-[var(--accent)]">
-            <Download className="h-3 w-3" /> Ilan Raporu
+            <Download className="h-3 w-3" /> İlan Raporu
           </a>
           <Select value={period} onChange={(e) => setPeriod(e.target.value)} className="w-44">
-            <option value="week">Son 7 Gun</option>
-            <option value="month">Son 30 Gun</option>
-            <option value="all">Tum Zamanlar</option>
+            <option value="week">Son 7 Gün</option>
+            <option value="month">Son 30 Gün</option>
+            <option value="all">Tüm Zamanlar</option>
           </Select>
         </div>
       </div>
 
       <h2 className="text-lg font-semibold text-[var(--muted-foreground)]">{periodLabel}</h2>
 
-      {/* Ozet Metrikleri */}
+      {/* Özet Metrikleri */}
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
-        <MetricCard icon={Building2} label="Yeni Ilan" value={s.newListings} sub={`${s.rejectedListings} reddedildi`} />
-        <MetricCard icon={Users} label="Yeni Musteri" value={s.newCustomers} />
+        <MetricCard icon={Building2} label="Yeni İlan" value={s.newListings} sub={`${s.rejectedListings} reddedildi`} />
+        <MetricCard icon={Users} label="Yeni Müşteri" value={s.newCustomers} />
         <MetricCard icon={Link2} label="Atama" value={s.totalAssignments} />
         <MetricCard icon={Heart} label="Favori" value={s.totalFavorites} />
-        <MetricCard icon={Eye} label="Goruntuleme" value={s.listingViews} />
+        <MetricCard icon={Eye} label="Görüntüleme" value={s.listingViews} />
         <MetricCard icon={LogIn} label="Giriş" value={s.logins} />
-        <MetricCard icon={TrendingDown} label="Fiyat Degisimi" value={s.priceChanges} />
+        <MetricCard icon={TrendingDown} label="Fiyat Değişimi" value={s.priceChanges} />
         <MetricCard icon={Bot} label="Scraper" value={s.scraperRuns} sub={`+${s.scraperTotals.accepted} kabul`} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* En Cok Goruntulenen */}
+        {/* En Çok Görüntülenen */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5" /> En Cok Goruntulenen</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5" /> En Çok Görüntülenen</CardTitle>
           </CardHeader>
           <CardContent>
             {report.topViewedListings.length === 0 ? (
@@ -101,7 +101,7 @@ export default function ReportsPage() {
                 {report.topViewedListings.map((l, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <span className="text-sm truncate max-w-[250px]">{l.title}</span>
-                    <Badge variant="secondary">{l.views} goruntulenme</Badge>
+                    <Badge variant="secondary">{l.views} görüntülenme</Badge>
                   </div>
                 ))}
               </div>
@@ -109,10 +109,10 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        {/* En Aktif Musteriler */}
+        {/* En Aktif Müşteriler */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" /> En Aktif Musteriler</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" /> En Aktif Müşteriler</CardTitle>
           </CardHeader>
           <CardContent>
             {report.activeCustomers.length === 0 ? (
@@ -122,7 +122,7 @@ export default function ReportsPage() {
                 {report.activeCustomers.map((c, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <span className="text-sm font-medium">{c.name}</span>
-                    <Badge variant="secondary">{c.logins} giris</Badge>
+                    <Badge variant="secondary">{c.logins} giriş</Badge>
                   </div>
                 ))}
               </div>
@@ -134,13 +134,13 @@ export default function ReportsPage() {
       {/* Scraper Ozet */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" /> Scraper Ozeti</CardTitle>
+          <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" /> Scraper Özeti</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4 text-center">
             <div>
               <p className="text-2xl font-bold">{s.scraperRuns}</p>
-              <p className="text-xs text-[var(--muted-foreground)]">Calistirma</p>
+              <p className="text-xs text-[var(--muted-foreground)]">Çalıştırma</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-green-600">{s.scraperTotals.accepted}</p>
