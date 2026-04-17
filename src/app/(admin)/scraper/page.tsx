@@ -97,7 +97,7 @@ export default function ScraperPage() {
       body: JSON.stringify({ citySlug: selectedCity, listingType, maxPages }),
     });
     setLoading(false);
-    toast("Scraping baslatildi", "success");
+    toast("Scraping başlatıldı", "success");
     fetchRuns();
     // Çalışıyorken her 10 saniyede bir otomatik yenile
     const interval = setInterval(async () => {

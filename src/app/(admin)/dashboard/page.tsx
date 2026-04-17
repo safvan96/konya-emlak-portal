@@ -139,9 +139,9 @@ export default function DashboardPage() {
               <Sparkles className="h-5 w-5 text-green-600" />
               <div>
                 <p className="font-medium text-green-800">
-                  Son girisimden beri <span className="text-lg">{stats.newListingsSinceLogin}</span> yeni ilan eklendi
+                  Son girişten beri <span className="text-lg">{stats.newListingsSinceLogin}</span> yeni ilan eklendi
                 </p>
-                <Link href="/listings" className="text-xs text-green-600 hover:underline">Ilanlari gor →</Link>
+                <Link href="/listings" className="text-xs text-green-600 hover:underline">İlanları gör →</Link>
               </div>
             </CardContent>
           </Card>
@@ -152,7 +152,7 @@ export default function DashboardPage() {
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingDown className="h-5 w-5 text-orange-600" />
-                <span className="font-medium text-orange-800">Fiyat Dususleri (Son 7 Gun)</span>
+                <span className="font-medium text-orange-800">Fiyat Düşüşleri (Son 7 Gün)</span>
               </div>
               <div className="space-y-1">
                 {stats.priceDrops.slice(0, 5).map((p, i) => (
