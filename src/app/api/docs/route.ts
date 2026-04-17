@@ -46,13 +46,13 @@ export async function GET() {
       { method: "GET", path: "/api/reports", auth: "admin", description: "Donemsel raporlar" },
       { method: "GET", path: "/api/reports/export", auth: "admin", description: "Rapor CSV export" },
       { method: "GET", path: "/api/dashboard", auth: "admin", description: "Dashboard verileri" },
-      { method: "GET", path: "/api/logs", auth: "admin", description: "Kullanici loglari" },
+      { method: "GET", path: "/api/logs", auth: "admin", description: "Kullanıcı logları" },
       { method: "GET", path: "/api/logs/export", auth: "admin", description: "Log CSV export" },
-      { method: "GET/POST", path: "/api/sessions", auth: "admin", description: "Oturum yonetimi" },
+      { method: "GET/POST", path: "/api/sessions", auth: "admin", description: "Oturum yönetimi" },
 
-      { method: "POST", path: "/api/profile/password", auth: true, description: "Sifre degistir" },
+      { method: "POST", path: "/api/profile/password", auth: true, description: "Şifre değiştir" },
       { method: "GET", path: "/api/images", auth: false, description: "Resim proxy" },
-      { method: "GET", path: "/api/history", auth: true, description: "Goruntuleme gecmisi" },
+      { method: "GET", path: "/api/history", auth: true, description: "Görüntüleme geçmişi" },
 
       { method: "GET", path: "/api/mobile/listings", auth: true, description: "Mobil ilan listesi" },
       { method: "GET", path: "/api/mobile/profile", auth: true, description: "Mobil profil" },
