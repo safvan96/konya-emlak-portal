@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -33,10 +34,19 @@ interface Assignment {
 }
 
 export default function MyListingsPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-[var(--muted-foreground)]">Yükleniyor...</div>}>
+      <MyListingsContent />
+    </Suspense>
+  );
+}
+
+function MyListingsContent() {
+  const searchParams = useSearchParams();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [filterCategory, setFilterCategory] = useState("");
-  const [filterType, setFilterType] = useState("");
-  const [filterDistrict, setFilterDistrict] = useState("");
+  const [filterType, setFilterType] = useState(searchParams.get("type") || "");
+  const [filterDistrict, setFilterDistrict] = useState(searchParams.get("district") || "");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
   const [sortBy, setSortBy] = useState("newest");
@@ -112,25 +122,25 @@ export default function MyListingsPage() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">İlanlarım</h1>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
         <Input
           placeholder="Ara..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          className="w-48"
+          className="col-span-2 md:col-span-2 lg:col-span-2"
         />
-        <Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-44">
+        <Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
           <option value="">Tüm Kategoriler</option>
           {categories.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </Select>
-        <Select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="w-32">
-          <option value="">Tümü</option>
+        <Select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+          <option value="">Tüm Tipler</option>
           <option value="SALE">Satılık</option>
           <option value="RENT">Kiralık</option>
         </Select>
-        <Select value={filterDistrict} onChange={(e) => setFilterDistrict(e.target.value)} className="w-40">
+        <Select value={filterDistrict} onChange={(e) => setFilterDistrict(e.target.value)}>
           <option value="">Tüm İlçeler</option>
           {districts.map((d) => (
             <option key={d} value={d}>{d}</option>
@@ -138,30 +148,39 @@ export default function MyListingsPage() {
         </Select>
         <Input
           type="number"
-          placeholder="Min fiyat"
+          placeholder="Min ₺"
           value={priceMin}
           onChange={(e) => setPriceMin(e.target.value)}
-          className="w-32"
         />
         <Input
           type="number"
-          placeholder="Max fiyat"
+          placeholder="Max ₺"
           value={priceMax}
           onChange={(e) => setPriceMax(e.target.value)}
-          className="w-32"
         />
-        <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="w-40">
+        <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="col-span-2 md:col-span-1 lg:col-span-1">
           <option value="newest">En Yeni</option>
-          <option value="price-asc">Fiyat (Artan)</option>
-          <option value="price-desc">Fiyat (Azalan)</option>
+          <option value="price-asc">Fiyat ↑</option>
+          <option value="price-desc">Fiyat ↓</option>
         </Select>
-        <span className="self-center text-sm text-[var(--muted-foreground)]">
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-sm text-[var(--muted-foreground)]">
           {filtered.length} ilan
         </span>
+        {(filterType || filterDistrict || filterCategory || priceMin || priceMax || searchText) && (
+          <button
+            onClick={() => { setFilterType(""); setFilterDistrict(""); setFilterCategory(""); setPriceMin(""); setPriceMax(""); setSearchText(""); }}
+            className="text-xs text-[var(--muted-foreground)] hover:text-[var(--primary)] underline"
+          >
+            Filtreleri temizle
+          </button>
+        )}
         {compareIds.size >= 2 && (
           <Link
             href={`/compare?ids=${Array.from(compareIds).join(",")}`}
-            className="self-center rounded-md bg-[var(--primary)] text-[var(--primary-foreground)] px-3 py-1.5 text-xs font-medium hover:opacity-90"
+            className="ml-auto rounded-md bg-[var(--primary)] text-[var(--primary-foreground)] px-3 py-1.5 text-xs font-medium hover:opacity-90"
           >
             Karşılaştır ({compareIds.size})
           </Link>

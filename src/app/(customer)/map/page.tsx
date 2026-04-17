@@ -189,7 +189,15 @@ export default function CustomerMapPage() {
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold">Son İlanlar</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Son İlanlar</h3>
+                <Link
+                  href={`/my-listings?district=${encodeURIComponent(selected.district)}${filterType ? `&type=${filterType}` : ""}`}
+                  className="text-xs text-[var(--primary)] hover:underline"
+                >
+                  Bu ilçedeki tümünü gör →
+                </Link>
+              </div>
               {selected.listings.map((l) => (
                 <Link
                   key={l.id}
