@@ -128,8 +128,15 @@ export default function CustomerDashboard() {
                   href={`/my-listings/${a.listing.id}`}
                   className="flex items-center justify-between rounded-md border border-[var(--border)] px-3 py-2 hover:bg-[var(--accent)] transition-colors"
                 >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{a.listing.title}</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium truncate">{a.listing.title}</p>
+                      {(Date.now() - new Date(a.assignedAt).getTime()) < 24 * 60 * 60 * 1000 && (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold animate-pulse">
+                          YENİ
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-[var(--muted-foreground)]">{a.listing.city.name} · {formatDate(a.assignedAt)}</p>
                   </div>
                   <span className="text-sm font-bold text-[var(--primary)] shrink-0 ml-3">

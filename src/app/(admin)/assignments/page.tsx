@@ -100,9 +100,9 @@ function AssignmentsContent() {
 
     if (res.ok) {
       const data = await res.json();
-      toast(`${data.assigned} ilan atandi`, "success");
+      toast(`${data.assigned} ilan atandı`, "success");
     } else {
-      toast("Atama hatasi", "error");
+      toast("Atama hatası", "error");
     }
 
     setSelectedListings([]);
@@ -112,7 +112,7 @@ function AssignmentsContent() {
 
   async function removeAssignment(id: string) {
     await fetch(`/api/assignments?id=${id}`, { method: "DELETE" });
-    toast("Atama kaldirildi", "info");
+    toast("Atama kaldırıldı", "info");
     fetchAssignments();
   }
 
