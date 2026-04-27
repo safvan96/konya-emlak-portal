@@ -31,6 +31,7 @@ interface FavoriteItem {
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterType, setFilterType] = useState("");
 
   useEffect(() => {
     fetchFavorites().finally(() => setLoading(false));
@@ -57,19 +58,47 @@ export default function FavoritesPage() {
     );
   }
 
+  const saleCount = favorites.filter((f) => f.listing.listingType === "SALE").length;
+  const rentCount = favorites.filter((f) => f.listing.listingType === "RENT").length;
+  const filtered = filterType ? favorites.filter((f) => f.listing.listingType === filterType) : favorites;
+
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Favorilerim</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">Favorilerim</h1>
+        {favorites.length > 0 && (
+          <div className="flex gap-2 text-sm">
+            <button
+              onClick={() => setFilterType("")}
+              className={`px-3 py-1 rounded-full transition-colors ${filterType === "" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] hover:bg-[var(--accent)]"}`}
+            >
+              Tümü ({favorites.length})
+            </button>
+            <button
+              onClick={() => setFilterType("SALE")}
+              className={`px-3 py-1 rounded-full transition-colors ${filterType === "SALE" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] hover:bg-[var(--accent)]"}`}
+            >
+              Satılık ({saleCount})
+            </button>
+            <button
+              onClick={() => setFilterType("RENT")}
+              className={`px-3 py-1 rounded-full transition-colors ${filterType === "RENT" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] hover:bg-[var(--accent)]"}`}
+            >
+              Kiralık ({rentCount})
+            </button>
+          </div>
+        )}
+      </div>
 
-      {favorites.length === 0 ? (
+      {filtered.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-[var(--muted-foreground)]">
-            Henüz favori ilanınız yok.
+            {favorites.length === 0 ? "Henüz favori ilanınız yok." : "Bu tipte favori yok."}
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {favorites.map((fav) => (
+          {filtered.map((fav) => (
             <Card key={fav.id} className="overflow-hidden">
               {fav.listing.imageUrls.length > 0 && (
                 <div className="aspect-video bg-[var(--muted)] relative">
