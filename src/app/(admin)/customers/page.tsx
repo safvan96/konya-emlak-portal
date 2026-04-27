@@ -174,6 +174,33 @@ export default function CustomersPage() {
         </div>
       )}
 
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-[var(--muted-foreground)]">Toplam</p>
+            <p className="text-2xl font-bold">{customers.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-[var(--muted-foreground)]">Aktif</p>
+            <p className="text-2xl font-bold text-green-600">{customers.filter((c) => c.isActive).length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-[var(--muted-foreground)]">Toplam Atama</p>
+            <p className="text-2xl font-bold">{customers.reduce((s, c) => s + c._count.assignments, 0)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-xs text-[var(--muted-foreground)]">Toplam Favori</p>
+            <p className="text-2xl font-bold text-red-500">{customers.reduce((s, c) => s + c._count.favorites, 0)}</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {selected.size > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-3 rounded-lg border border-[var(--primary)] bg-[var(--primary)]/5 px-4 py-3 flex-wrap">
