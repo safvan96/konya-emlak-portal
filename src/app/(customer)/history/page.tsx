@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
 import { Clock } from "lucide-react";
-import Link from "next/link";
 
 interface ViewLog {
   id: string;
@@ -36,21 +33,40 @@ export default function HistoryPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-2">
-          {logs.map((log) => {
-            const title = log.details?.replace("İlan görüntülendi: ", "") || "Bilinmeyen ilan";
-            return (
-              <Card key={log.id}>
-                <CardContent className="p-4 flex items-center gap-3">
-                  <Clock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{title}</p>
-                    <p className="text-xs text-[var(--muted-foreground)]">{formatDate(log.createdAt)}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="space-y-4">
+          {Object.entries(
+            logs.reduce((acc: Record<string, ViewLog[]>, log) => {
+              const d = new Date(log.createdAt);
+              const today = new Date();
+              const yesterday = new Date(today.getTime() - 86400000);
+              let key: string;
+              if (d.toDateString() === today.toDateString()) key = "Bugün";
+              else if (d.toDateString() === yesterday.toDateString()) key = "Dün";
+              else key = d.toLocaleDateString("tr-TR", { day: "numeric", month: "long" });
+              (acc[key] ||= []).push(log);
+              return acc;
+            }, {})
+          ).map(([dateKey, items]) => (
+            <div key={dateKey} className="space-y-2">
+              <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{dateKey}</h3>
+              <div className="space-y-2">
+                {items.map((log) => {
+                  const title = log.details?.replace("İlan görüntülendi: ", "") || "Bilinmeyen ilan";
+                  return (
+                    <Card key={log.id}>
+                      <CardContent className="p-4 flex items-center gap-3">
+                        <Clock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{title}</p>
+                          <p className="text-xs text-[var(--muted-foreground)]">{new Date(log.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
