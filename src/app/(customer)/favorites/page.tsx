@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select } from "@/components/ui/select";
 import { formatPrice } from "@/lib/utils";
 import { Heart, MapPin, Ruler, Home, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -32,6 +33,7 @@ export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
     fetchFavorites().finally(() => setLoading(false));
@@ -61,6 +63,11 @@ export default function FavoritesPage() {
   const saleCount = favorites.filter((f) => f.listing.listingType === "SALE").length;
   const rentCount = favorites.filter((f) => f.listing.listingType === "RENT").length;
   const filtered = filterType ? favorites.filter((f) => f.listing.listingType === filterType) : favorites;
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "price-asc") return (a.listing.price || 0) - (b.listing.price || 0);
+    if (sortBy === "price-desc") return (b.listing.price || 0) - (a.listing.price || 0);
+    return 0;
+  });
 
   return (
     <div className="space-y-6">
@@ -86,6 +93,11 @@ export default function FavoritesPage() {
             >
               Kiralık ({rentCount})
             </button>
+            <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="w-32 h-7 text-xs">
+              <option value="newest">En Yeni</option>
+              <option value="price-asc">Fiyat ↑</option>
+              <option value="price-desc">Fiyat ↓</option>
+            </Select>
           </div>
         )}
       </div>
@@ -98,7 +110,7 @@ export default function FavoritesPage() {
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((fav) => (
+          {sorted.map((fav) => (
             <Card key={fav.id} className="overflow-hidden">
               {fav.listing.imageUrls.length > 0 && (
                 <div className="aspect-video bg-[var(--muted)] relative">
